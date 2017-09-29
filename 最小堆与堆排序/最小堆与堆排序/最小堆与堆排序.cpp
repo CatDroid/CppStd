@@ -10,7 +10,7 @@ using namespace std ;
 
 //	我们在排序时，如果要排序后的顺序为从小到大，则需选择最大堆，反之，选择最小堆
 //	最小堆 本质是 完全二叉树 + 子节点 必须比 父节点 要小 	
-
+//	删除最小值 并新增一个数再求最小值    时间复杂度 O(log2N)简写为O(logN)
  
 // current_root 上往下  当前值比左右节点要小的话，从小的节点 就下沉 
 void sortDown(TYPE* heap, int len , int current_root) { 
