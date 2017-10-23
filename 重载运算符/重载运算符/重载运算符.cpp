@@ -1,4 +1,4 @@
-// ÖØÔØÔËËã·û.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌÐòµÄÈë¿Úµã¡£
+// é‡è½½è¿ç®—ç¬¦.cpp : å®šä¹‰æŽ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
@@ -11,12 +11,12 @@ using namespace std;
 
 /*
 
-C++²»ÄÜÖØÔØµÄÔËËã·ûÓÐÎå¸ö
-£¨1£© "."£¨³ÉÔ±·ÃÎÊÔËËã·û£©
-£¨2£©" .*"£¨³ÉÔ±Ö¸Õë·ÃÎÊÔËËã·û£©
-£¨3£© "::"£¨ÓòÔËËã·û£©
-£¨4£©"siezof"£¨³¤¶ÈÔËËã·û£©
-£¨5£© " ?:"£¨Ìõ¼þÔËËã·û£©
+C++ä¸èƒ½é‡è½½çš„è¿ç®—ç¬¦æœ‰äº”ä¸ª
+ï¼ˆ1ï¼‰ "."ï¼ˆæˆå‘˜è®¿é—®è¿ç®—ç¬¦ï¼‰
+ï¼ˆ2ï¼‰" .*"ï¼ˆæˆå‘˜æŒ‡é’ˆè®¿é—®è¿ç®—ç¬¦ï¼‰
+ï¼ˆ3ï¼‰ "::"ï¼ˆåŸŸè¿ç®—ç¬¦ï¼‰
+ï¼ˆ4ï¼‰"siezof"ï¼ˆé•¿åº¦è¿ç®—ç¬¦ï¼‰
+ï¼ˆ5ï¼‰ " ?:"ï¼ˆæ¡ä»¶è¿ç®—ç¬¦ï¼‰
 
 */
 class MyString {
@@ -74,7 +74,7 @@ public:
 		return *this;
 	}
 
-	// ÀàÐÍ×ª»»·û
+	// ç±»åž‹è½¬æ¢ç¬¦
 	operator int() const {
 		return  len; 
 	}
@@ -91,20 +91,20 @@ public:
 	}
 
 	// friend  
-	// ËüÆÆ»µÁËÀàµÄ·â×°ÐÔºÍÒþ²ØÐÔ£¬Ê¹µÃ·Ç³ÉÔ±º¯Êý¿ÉÒÔ·ÃÎÊÀàµÄË½ÓÐ³ÉÔ±
-	// ½¨Òé½ö½öÔÚÖØÔØ²Ù×÷·ûµÄÊ±ºòÊ¹ÓÃ 
-	// operator <ÔËËã·û>(<²ÎÊý1>,<²ÎÊý2>) ËüµÈ¼ÛÓÚ <²ÎÊý1><ÔËËã·û><²ÎÊý2> 
-	// cout = operator<<(cout,x1); //  ÏÔÊ¾µ÷ÓÃ
-	// cout = cout<<x1;   //  OK  µÈ¼ÛÕâ¸ö 
-	// >>ºÍ<<£¨ÊäÈëÊä³öÔËËã·û£©
-	// ÓÑÔªº¯Êý²»ÊÇÀàµÄ³ÉÔ±º¯Êý£¬¶¨ÒåÔÚÀàÄÚ»òÕßÀàÍâÃ»ÓÐÇø±ð
-	// ¶¨ÒåÔÚÀàÖÐµÄÓÑÔªº¯Êý  ¶¨ÒåÔÚÀàÖÐµÄÓÑÔªº¯Êý,Æä×÷ÓÃÓòÔÚÈ«¾Ö×÷ÓÃÓòÏÂ. 
+	// å®ƒç ´åäº†ç±»çš„å°è£…æ€§å’Œéšè—æ€§ï¼Œä½¿å¾—éžæˆå‘˜å‡½æ•°å¯ä»¥è®¿é—®ç±»çš„ç§æœ‰æˆå‘˜
+	// å»ºè®®ä»…ä»…åœ¨é‡è½½æ“ä½œç¬¦çš„æ—¶å€™ä½¿ç”¨ 
+	// operator <è¿ç®—ç¬¦>(<å‚æ•°1>,<å‚æ•°2>) å®ƒç­‰ä»·äºŽ <å‚æ•°1><è¿ç®—ç¬¦><å‚æ•°2> 
+	// cout = operator<<(cout,x1); //  æ˜¾ç¤ºè°ƒç”¨
+	// cout = cout<<x1;   //  OK  ç­‰ä»·è¿™ä¸ª 
+	// >>å’Œ<<ï¼ˆè¾“å…¥è¾“å‡ºè¿ç®—ç¬¦ï¼‰
+	// å‹å…ƒå‡½æ•°ä¸æ˜¯ç±»çš„æˆå‘˜å‡½æ•°ï¼Œå®šä¹‰åœ¨ç±»å†…æˆ–è€…ç±»å¤–æ²¡æœ‰åŒºåˆ«
+	// å®šä¹‰åœ¨ç±»ä¸­çš„å‹å…ƒå‡½æ•°  å®šä¹‰åœ¨ç±»ä¸­çš„å‹å…ƒå‡½æ•°,å…¶ä½œç”¨åŸŸåœ¨å…¨å±€ä½œç”¨åŸŸä¸‹. 
 	friend ostream& operator<< (ostream& out, MyString& self);
 };
 
-// ²»ÊÇÀàº¯Êý 
+// ä¸æ˜¯ç±»çš„æˆå‘˜å‡½æ•° 
 ostream& operator<< (ostream& out, MyString& self) {
-	out << "µØÖ·Öµ£º" << static_cast<void *>(self.buf) << " ×Ö·û´®: " << self.buf  <<  endl;
+	out << "åœ°å€å€¼ï¼š" << static_cast<void *>(self.buf) << " å­—ç¬¦ä¸²: " << self.buf  <<  endl;
 	return out;
 }
 
@@ -113,7 +113,7 @@ int main()
 	MyString arr[] = { MyString("abc"), MyString("789"),MyString("ABCDE123") };
 	for (MyString& temp : arr) {
 		cout << temp;
-		cout << "³¤¶È£º" << int(temp) << endl;
+		cout << "é•¿åº¦ï¼š" << int(temp) << endl;
 	}
 	return 0;
 }
