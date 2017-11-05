@@ -36,14 +36,16 @@ int binary_search_rotate_array(int* a, int n, int x) {
 		if (a[head] == x) return head;
 		if (a[end] == x) return end;
 
-		if ( a[mid] > a[head]) {
-			if ( a[head] < x  && x < a[mid]  ) {
-				 end = mid;
+		// 判断mid跟head还是end是连续的 
+
+		if (a[head] < a[mid]  ) {	//	head .. mid 是连续变大的
+			if ( a[head] < x  && x < a[mid]  ) { 
+				 end = mid;			//	在连续变大的区域中
 			}
-			else {
+			else {					//	不在连续变大的区域中
 				head = mid;
 			}
-		} else {
+		} else {					//  否则就是 mid end 是连续变大的 (因为a[head]>a[mid] 说明mid是在另外一段 )
 			if (   a[mid] < x  && x < a[end] ) {
 				head = mid;
 			}
