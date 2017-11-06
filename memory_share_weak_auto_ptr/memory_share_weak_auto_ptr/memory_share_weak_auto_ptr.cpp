@@ -1,4 +1,4 @@
-// memory_share_weak_auto_ptr.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+// memory_share_weak_auto_ptr.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
@@ -22,12 +22,12 @@ public:
 
 void sink(unique_ptr<Base> temp) {
 
-	cout << "unique_ptr<Base> ×÷Îª²ÎÊı ¶ªÊ§ÉúÃü" << endl;
+	cout << "unique_ptr<Base> ä½œä¸ºå‚æ•° ä¸¢å¤±ç”Ÿå‘½" << endl;
 }
 
 unique_ptr<Base> create() {
-	cout << "unique_ptr<Base> ×÷Îª·µ»ØÖµ ²»ÓÃstd::move " << endl;
-	// nique_ptr²»Ö§³Ö¿½±´²Ù×÷£¬µ«È´ÓĞÒ»¸öÀıÍâ£º¿ÉÒÔ´Óº¯ÊıÖĞ·µ»ØÒ»¸öunique_ptr
+	cout << "unique_ptr<Base> ä½œä¸ºè¿”å›å€¼ ä¸ç”¨std::move " << endl;
+	// nique_pträ¸æ”¯æŒæ‹·è´æ“ä½œï¼Œä½†å´æœ‰ä¸€ä¸ªä¾‹å¤–ï¼šå¯ä»¥ä»å‡½æ•°ä¸­è¿”å›ä¸€ä¸ªunique_ptr
 	return unique_ptr<Base>(new Base());
 }
 
@@ -37,33 +37,33 @@ int main()
 	cout << "--------------begin of main ---------------" << endl;
 	{
 		unique_ptr<Base> ptr(new Base());
-		unique_ptr<Base> ptr2(ptr.release());		//	1. unique_ptr release ÊÍ·Å¿ØÖÆÈ¨ µ«ÊÇ²»Îö¹¹¶ÔÏó ¶øÊÇ·µ»Ø
-		//unique_ptr<Base> ptr2(std::move(ptr));		// ÕâÑùÒ²¿ÉÒÔ (std::moveÏàµ±ÓÚ°ÑÔ­À´µÄunique_ptrÖĞµÄmPtrÉèÖÃÎª0²¢·µ»Ø¾ÉÖµ)
+		unique_ptr<Base> ptr2(ptr.release());		//	1. unique_ptr release é‡Šæ”¾æ§åˆ¶æƒ ä½†æ˜¯ä¸ææ„å¯¹è±¡ è€Œæ˜¯è¿”å›
+		//unique_ptr<Base> ptr2(std::move(ptr));		// è¿™æ ·ä¹Ÿå¯ä»¥ (std::moveç›¸å½“äºæŠŠåŸæ¥çš„unique_pträ¸­çš„mPtrè®¾ç½®ä¸º0å¹¶è¿”å›æ—§å€¼)
 		//unique_ptr<Base> ptr3;			  
-		//ptr3 = ptr2;								//	2. unique_ptr²»´æÔÚoperator=
-		ptr2.reset();								//	3. unique_ptr reset ÌáÇ°Îö¹¹¶ÔÏó 
+		//ptr3 = ptr2;								//	2. unique_pträ¸å­˜åœ¨operator=
+		ptr2.reset();								//	3. unique_ptr reset æå‰ææ„å¯¹è±¡ 
 	}
 
 	cout << "-------------------------------------------" << endl;
 	{
-		unique_ptr<Base> a1 = create();				// 4.×ªÒÆËùÓĞÈ¨ º¯Êı·µ»Ø ²»ĞèÒªstd::move
-		unique_ptr<Base> a2 = std::move(a1);		// 5.×ªÒÆËùÓĞÈ¨ unique_ptrĞèÒªÅäºÏstd::move 
+		unique_ptr<Base> a1 = create();				// 4.è½¬ç§»æ‰€æœ‰æƒ å‡½æ•°è¿”å› ä¸éœ€è¦std::move
+		unique_ptr<Base> a2 = std::move(a1);		// 5.è½¬ç§»æ‰€æœ‰æƒ unique_ptréœ€è¦é…åˆstd::move 
 		unique_ptr<Base> a3(new Base());
-		sink(std::move(a2));						// 6.×ªÒÆËùÓĞÈ¨ ²ÎÊı´«µİ ĞèÒªstd::move»òÕßrelease
-		cout << ">>>>> a2 ²ÎÊıÖĞ¶ªÊ§ÉúÃü" << endl;
+		sink(std::move(a2));						// 6.è½¬ç§»æ‰€æœ‰æƒ å‚æ•°ä¼ é€’ éœ€è¦std::moveæˆ–è€…release
+		cout << ">>>>> a2 å‚æ•°ä¸­ä¸¢å¤±ç”Ÿå‘½" << endl;
 	}
 
 	cout << "-------------------------------------------" << endl;
 	{
 		vector<unique_ptr<Base>> vec;
 		unique_ptr<Base> p(new Base()); 
-		vec.push_back(std::move(p));				// 7.vectorÊ¹ÓÃ×¢Òâpush_backºÍpop/pack(·µ»ØµÄÊÇÒıÓÃ)Ö®Ç°std::move×ªÒåÓïÒå 
+		vec.push_back(std::move(p));				// 7.vectorä½¿ç”¨æ³¨æ„push_backå’Œpop/pack(è¿”å›çš„æ˜¯å¼•ç”¨)ä¹‹å‰std::moveè½¬ä¹‰è¯­ä¹‰ 
 		vec.push_back(unique_ptr<Base>(new Base()));
 		vec.push_back(unique_ptr<Base>(new Base()));
-		vec.push_back(unique_ptr<Base>(new Base()));// 8.ÁÙÊ±unique_ptr<>() ²»ĞèÒªstd::move 
+		vec.push_back(unique_ptr<Base>(new Base()));// 8.ä¸´æ—¶unique_ptr<>() ä¸éœ€è¦std::move 
 		unique_ptr<Base> p2(std::move(vec.back()));		 
 		vec.pop_back();
-		cout << "vector.back()ºó std::move×ªÒÆÓïÒå" << endl;
+		cout << "vector.back()å std::moveè½¬ç§»è¯­ä¹‰" << endl;
 		p2.reset();									
 	
 		cout << "vector begin " << endl;
@@ -72,8 +72,8 @@ int main()
 		while (itor != vec.end()) {
 			i++;
 			if (i == 1) {
-				itor = vec.erase(itor);				//  9.vector.erase »áÎö¹¹std::unque_ptr ´Ó¶øÎö¹¹±»¹ÜÀí¶ÔÏó 
-				cout << "vector erase " << endl;	//		vector ÄÚ²¿¿Õ¼ä²»¹» realloc ËùÒÔ²»»á¸³Öµ???
+				itor = vec.erase(itor);				//  9.vector.erase ä¼šææ„std::unque_ptr ä»è€Œææ„è¢«ç®¡ç†å¯¹è±¡ 
+				cout << "vector erase " << endl;	//		vector å†…éƒ¨ç©ºé—´ä¸å¤Ÿ realloc æ‰€ä»¥ä¸ä¼šèµ‹å€¼???
 			}
 			else {
 				itor++;
@@ -81,40 +81,40 @@ int main()
 		}
 		cout << "vector end " << endl;			
 		
-		cout << "vectorÎö¹¹ ÆäÖĞµÄ unique_ptr¶ÔÏóÒ²Îö¹¹ " << endl;
-													//  10. vector¶ÔÏóÎö¹¹ ÆäÖĞµÄunique_ptrÒ²»áÎö¹¹¿ØÖÆµÄ¶ÔÏó
+		cout << "vectorææ„ å…¶ä¸­çš„ unique_ptrå¯¹è±¡ä¹Ÿææ„ " << endl;
+													//  10. vectorå¯¹è±¡ææ„ å…¶ä¸­çš„unique_pträ¹Ÿä¼šææ„æ§åˆ¶çš„å¯¹è±¡
 	}
 	cout << "-------------------------------------------" << endl;
 	{
 		unique_ptr<int[]> p(new int[5]{ 1, 2, 3, 4, 5 }); 
-		p[0] = 0;									// 11. ¹ÜÀíÊı×é Ö§³Öoperator[]
+		p[0] = 0;									// 11. ç®¡ç†æ•°ç»„ æ”¯æŒoperator[]
 	}
 
 	cout << "-------------------------------------------" << endl;
 	{
 		unique_ptr<Base> p1(new Base());
 		unique_ptr<Base> p2(new Base());
-		std::swap(p1, p2);							// 12. ½»»»¹ÜÀíµÄ¶ÔÏó  
+		std::swap(p1, p2);							// 12. äº¤æ¢ç®¡ç†çš„å¯¹è±¡  
 		p1.reset();
 		p2.reset();
 	}
 	cout << "--------------end of main -----------------" << endl;
 
-	// unique_ptrÊ¹ÓÃ³¡¾°
-	//	1. Îª¶¯Ì¬ÉêÇëµÄ×ÊÔ´Ìá¹©Òì³£°²È«±£Ö¤ (¾Ö²¿ÒıÓÃ)
-	//	2. ·µ»Øº¯ÊıÄÚ¶¯Ì¬ÉêÇë×ÊÔ´µÄËùÓĞÈ¨   (º¯Êı·µ»Ø)
-	//	3. ÔÚÈİÆ÷ÖĞ±£´æÖ¸Õë vector<unique_ptr<Base>>
-	//  4. ¹ÜÀí¶¯Ì¬Êı×é  
+	// unique_pträ½¿ç”¨åœºæ™¯
+	//	1. ä¸ºåŠ¨æ€ç”³è¯·çš„èµ„æºæä¾›å¼‚å¸¸å®‰å…¨ä¿è¯ (å±€éƒ¨å¼•ç”¨)
+	//	2. è¿”å›å‡½æ•°å†…åŠ¨æ€ç”³è¯·èµ„æºçš„æ‰€æœ‰æƒ   (å‡½æ•°è¿”å›)
+	//	3. åœ¨å®¹å™¨ä¸­ä¿å­˜æŒ‡é’ˆ vector<unique_ptr<Base>>
+	//  4. ç®¡ç†åŠ¨æ€æ•°ç»„  
 	//  http://www.cnblogs.com/DswCnblog/p/5628195.html
 
 	cout << "-------------------------------------------" << endl;
 	{
-		//vector< unique_ptr<Base> > unique_v(10);		// Õı³£
-		vector< auto_ptr<Base> > auto_v(10);			// vs2015 Õı³£  µ«ÊÇclang++/g++ ·Çc++11¶¼»á´íÎó clang++/g++Ê¹ÓÃc++11¾ÍÕı³££¡
-														// clang++ ÊµÏÖÊÇ   
-														// ÏÈ·ÖÅäÄÚ´æ È»ºó placement new , ½«¶ÔÏó¿½±´Ò»·İ·Åµ½pÖ¸ÏòµÄÄÚ´æÉÏÈ¥(¿½±´¹¹Ôì)
-														// µ«Êµ¼ÊÊÇ auto_ptr Ö»ÊÇÓĞ constructor(const auto_ptr& rhs)
-														// ËùÒÔ»áÓĞ´íÎó passing ¡®const std::auto_ptr<XXX>¡¯ as ¡®this¡¯ argument of ¡®std::auto_ptr<XXX>
+		//vector< unique_ptr<Base> > unique_v(10);		// æ­£å¸¸
+		vector< auto_ptr<Base> > auto_v(10);			// vs2015 æ­£å¸¸  ä½†æ˜¯clang++/g++ éc++11éƒ½ä¼šé”™è¯¯ clang++/g++ä½¿ç”¨c++11å°±æ­£å¸¸ï¼
+														// clang++ å®ç°æ˜¯   
+														// å…ˆåˆ†é…å†…å­˜ ç„¶å placement new , å°†å¯¹è±¡æ‹·è´ä¸€ä»½æ”¾åˆ°pæŒ‡å‘çš„å†…å­˜ä¸Šå»(æ‹·è´æ„é€ )
+														// ä½†å®é™…æ˜¯ auto_ptr åªæ˜¯æœ‰ constructor(const auto_ptr& rhs)
+														// æ‰€ä»¥ä¼šæœ‰é”™è¯¯ passing â€˜const std::auto_ptr<XXX>â€™ as â€˜thisâ€™ argument of â€˜std::auto_ptr<XXX>
 		for (int i = 0; i<10; i++){
 			auto_v[i] = auto_ptr<Base>(new Base() );
 		}
@@ -123,12 +123,12 @@ int main()
     return 0;
 }
 
-// shared_ptrÒ²¿ÉÒÔ°²È«µØ·Åµ½±ê×¼ÈİÆ÷ÖĞ
+// shared_pträ¹Ÿå¯ä»¥å®‰å…¨åœ°æ”¾åˆ°æ ‡å‡†å®¹å™¨ä¸­
 
 
-// auto_ptrÔÚ¿½±´¹¹ÔìµÄÊ±ºò£¬Ò»¶¨»áĞŞ¸ÄÔªËØµÄÖµ¡£ËùÒÔSTLÔªËØ²»ÄÜÊ¹ÓÃauto_ptr
-// auto_ptr²»ÄÜ×÷ÎªÈİÆ÷¶ÔÏó£¬STLÈİÆ÷ÖĞµÄÔªËØ¾­³£ÒªÖ§³Ö¿½±´£¬¸³ÖµµÈ²Ù×÷£¬ÔÚÕâ¹ı³ÌÖĞauto_ptr»á´«µİËùÓĞÈ¨£¬ÄÇÃ´sourceÓësinkÔªËØÖ®¼ä¾Í²»µÈ¼ÛÁË
+// auto_ptråœ¨æ‹·è´æ„é€ çš„æ—¶å€™ï¼Œä¸€å®šä¼šä¿®æ”¹å…ƒç´ çš„å€¼ã€‚æ‰€ä»¥STLå…ƒç´ ä¸èƒ½ä½¿ç”¨auto_ptr
+// auto_pträ¸èƒ½ä½œä¸ºå®¹å™¨å¯¹è±¡ï¼ŒSTLå®¹å™¨ä¸­çš„å…ƒç´ ç»å¸¸è¦æ”¯æŒæ‹·è´ï¼Œèµ‹å€¼ç­‰æ“ä½œï¼Œåœ¨è¿™è¿‡ç¨‹ä¸­auto_pträ¼šä¼ é€’æ‰€æœ‰æƒï¼Œé‚£ä¹ˆsourceä¸sinkå…ƒç´ ä¹‹é—´å°±ä¸ç­‰ä»·äº†
 
-// auto_ptr²»ÄÜÖ¸ÏòÊı×é£¬ÒòÎªauto_ptrÔÚÎö¹¹µÄÊ±ºòÖ»ÊÇµ÷ÓÃdelete,¶øÊı×éÓ¦¸ÃÒªµ÷ÓÃdelete[]
+// auto_pträ¸èƒ½æŒ‡å‘æ•°ç»„ï¼Œå› ä¸ºauto_ptråœ¨ææ„çš„æ—¶å€™åªæ˜¯è°ƒç”¨delete,è€Œæ•°ç»„åº”è¯¥è¦è°ƒç”¨delete[]
 //  http://www.cnblogs.com/qytan36/archive/2010/06/28/1766555.html
 
