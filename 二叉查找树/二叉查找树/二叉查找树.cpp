@@ -59,6 +59,23 @@ BSData* makeData(int w, int h, float s, Type k) {
 	return p; 
 }
 
+/* 二叉树的基本的遍历规则有三种：前序遍历，中序遍历和后序遍历 
+	 定义:
+	 http://www.itzhai.com/preorder-binary-tree-traversal-inorder-traversal-and-postorder-traversal-of-algorithm-2.html#read-more
+	 前序遍历在第一次遇到结点时立即访问，中序遍历第二次遇到结点时访问，后序遍历则到第三次遇到结点时才访问。
+	 前序遍历：根左右   中序遍历：左根右   后序遍历：左右根
+	 规律：
+		1.前序 第一个元素是 根节点
+		2.中序 根节点元素 前面的元素是位于 左子树   后面的元素是位于 右子树
+		3.前序 第二个元素是 左子树的根节点   
+		4.前序 左子树元素的 下一个元素 是 右子树的根节点
+
+		5.其他元素  在前序 AB  中序 BA  那么A是根节点 B是A的左节点
+
+	练习：从前序和中序 得到 后序
+	https://www.nowcoder.com/questionTerminal/d06c0640861a4523a6edec11512200bd
+*/
+
 
 // 前序遍历、中序遍历、后序遍历	
 // 前中后  指示 根节点打印顺序 
