@@ -1,4 +1,4 @@
-// map_unorder_map.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+// map_unorder_map.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
@@ -9,7 +9,7 @@
 #include<map>
 using namespace std;
 
-// Ò»ÑùµÄhash value µ«ÊÇ²»ÏàµÈ 
+// ä¸€æ ·çš„hash value ä½†æ˜¯ä¸ç›¸ç­‰ 
 //#define SAME_HASH_VALUE_BUT_NOT_EQUAL	1 
 
 class Person
@@ -53,7 +53,7 @@ inline void hash_combine(std::size_t& seed, const T& val){
 	seed ^= std::hash<T>()(val)  + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
-//	Hashº¯Êı
+//	Hashå‡½æ•°
 class PersonHash
 {
 public:
@@ -72,7 +72,7 @@ public:
 };
 
 
-//	ÏàµÈº¯Êı
+//	ç›¸ç­‰å‡½æ•°
 class PersonKey
 {
 public:
@@ -83,7 +83,7 @@ public:
 };
 
 
-class Cat		// ²âÊÔstd::map 
+class Cat		// æµ‹è¯•std::map 
 {
 public:
 	string name;
@@ -114,14 +114,14 @@ int main()
 #if SAME_HASH_VALUE_BUT_NOT_EQUAL
 		Person p5("Tom5", 24);
 #else
-		Person p5("Tom4", 24); // ÍêÈ«ÏàµÈ Ò²¾ÍÊÇ hash_value ºÍ ==  ²»»áÔÙinsertÊ±ºò¼ÓÈëunorder_map 
-#endif 
+		Person p5("Tom4", 24); // å®Œå…¨ç›¸ç­‰ ä¹Ÿå°±æ˜¯ hash_value å’Œ ==  ä¸ä¼šå†insertæ—¶å€™åŠ å…¥unorder_map 
+#endif
  
 
 		m.insert(make_pair(p3, 103));
-		m.insert(umap::value_type(p4, 104)); // 1. value_type ¾ÍÊÇtypedef   std::pair<Person,int>
-		m.insert(umap::value_type(p5, 105)); // 2. insert»áµ÷ÓÃ¿½±´¹¹Ôìº¯Êı
-		m.insert(umap::value_type(p1, 101)); // 3. insert keyµÄhashÖµºÍ== Èç¹û¶¼Ò»ÑùµÄ»°£¬²»»á¸²¸ÇÔ­À´key¶ÔÓ¦µÄvalue
+		m.insert(umap::value_type(p4, 104)); // 1. value_type å°±æ˜¯typedef   std::pair<Person,int>
+		m.insert(umap::value_type(p5, 105)); // 2. insertä¼šè°ƒç”¨æ‹·è´æ„é€ å‡½æ•°
+		m.insert(umap::value_type(p1, 101)); // 3. insert keyçš„hashå€¼å’Œ== å¦‚æœéƒ½ä¸€æ ·çš„è¯ï¼Œä¸ä¼šè¦†ç›–åŸæ¥keyå¯¹åº”çš„value
 		m.insert(umap::value_type(p2, 102));
 
 		for (umap::iterator iter = m.begin(); iter != m.end(); iter++) {
@@ -129,18 +129,18 @@ int main()
 		}
 
 #if SAME_HASH_VALUE_BUT_NOT_EQUAL
-		cout << "after m[p5] = 555 " << endl;		// 4. ËÑË÷keyÊ±ºò ÏÈÇókeyµÄhash_value ÕÒµ½¶ÔÓ¦bulket(Í°),È»ºóÔÚÍ°ÖĞ operator== ÕÒµ½¶ÔÓ¦µÄvalue 
+		cout << "after m[p5] = 555 " << endl;		// 4. æœç´¢keyæ—¶å€™ å…ˆæ±‚keyçš„hash_value æ‰¾åˆ°å¯¹åº”bulket(æ¡¶),ç„¶ååœ¨æ¡¶ä¸­ operator== æ‰¾åˆ°å¯¹åº”çš„value 
 		m[p5] = 555;
 #else
 		cout << "after m[p5] = 105 " << endl;
-		m[p5] = 105;								//  4. ¿ÉÒÔÍ¨¹ımap[key]=valueÀ´ĞŞ¸Äkey¶ÔÓ¦µÄÖµ
+		m[p5] = 105;								//  4. å¯ä»¥é€šè¿‡map[key]=valueæ¥ä¿®æ”¹keyå¯¹åº”çš„å€¼
 #endif 
 
 		for (umap::iterator iter = m.begin(); iter != m.end(); iter++) {
 			cout << iter->first.name << "\t" << iter->first.age << "\t" << iter->second << "\tthis = " << &iter->first << endl;
 		} 
-		//	unordered_map±¾Éí¿ÉÄÜÓĞ³åÍ»µÄ¿ÉÄÜ£¬ËùÒÔÃ¿Ò»¸ökeyµÄ hash value ¶ÔÓ¦Ò»¸öbucket(std::listÊµÏÖ)
-		//	unordered_mapÊÇÃ¿¸ö¡°hash value¡±¶ÔÓ¦Ò»¸öbucket£¬²»ÊÇÒ»¸ö¡°key¡±¶ÔÓ¦Ò»¸öbucket
+		//	unordered_mapæœ¬èº«å¯èƒ½æœ‰å†²çªçš„å¯èƒ½ï¼Œæ‰€ä»¥æ¯ä¸€ä¸ªkeyçš„ hash value å¯¹åº”ä¸€ä¸ªbucket(std::listå®ç°)
+		//	unordered_mapæ˜¯æ¯ä¸ªâ€œhash valueâ€å¯¹åº”ä¸€ä¸ªbucketï¼Œä¸æ˜¯ä¸€ä¸ªâ€œkeyâ€å¯¹åº”ä¸€ä¸ªbucket
 	}
 
 	{
@@ -150,7 +150,7 @@ int main()
 		Cat cat3("Cat3", 33);
 		Cat cat4("Cat4", 34);
 		Cat cat5("Cat5", 35);
-		cat_map.insert(make_pair(cat3, 203));		//	1. std::map µü´úÊ±ºò »á¸ù¾İ operator< °´Ñ­Ğòµü´ú
+		cat_map.insert(make_pair(cat3, 203));		//	1. std::map è¿­ä»£æ—¶å€™ ä¼šæ ¹æ® operator< æŒ‰å¾ªåºè¿­ä»£
 		cat_map.insert(make_pair(cat4, 204));
 		cat_map.insert(make_pair(cat5, 205));
 		cat_map.insert(make_pair(cat1, 201));
