@@ -9,6 +9,9 @@
 #include<map>
 using namespace std;
 
+// 一样的hash value 但是不相等 
+//#define SAME_HASH_VALUE_BUT_NOT_EQUAL	1 
+
 class Person
 {
 public:
@@ -46,7 +49,8 @@ public:
 
 template<class T>
 inline void hash_combine(std::size_t& seed, const T& val){
-	seed ^= std::hash<T>()(val) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+
+	seed ^= std::hash<T>()(val)  + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
 //	Hash函数
@@ -54,11 +58,16 @@ class PersonHash
 {
 public:
 	std::size_t operator()(const Person& p) const
-	{
+	{	
+#if SAME_HASH_VALUE_BUT_NOT_EQUAL
+		return p.age;
+#else 
 		size_t seed = 0;
 		hash_combine(seed, std::hash_value(p.name));
 		hash_combine(seed, std::hash_value(p.age));
 		return seed;
+#endif 
+		
 	}
 };
 
@@ -102,7 +111,12 @@ int main()
 		Person p2("Tom2", 22);
 		Person p3("Tom3", 23);
 		Person p4("Tom4", 24);
-		Person p5("Tom4", 24);
+#if SAME_HASH_VALUE_BUT_NOT_EQUAL
+		Person p5("Tom5", 24);
+#else
+		Person p5("Tom4", 24); // 完全相等 也就是 hash_value 和 ==  不会再insert时候加入unorder_map 
+#endif 
+ 
 
 		m.insert(make_pair(p3, 103));
 		m.insert(umap::value_type(p4, 104)); // 1. value_type 就是typedef   std::pair<Person,int>
@@ -114,12 +128,19 @@ int main()
 			cout << iter->first.name << "\t" << iter->first.age << "\t" << iter->second << "\tthis = " << &iter->first << endl;
 		}
 
+#if SAME_HASH_VALUE_BUT_NOT_EQUAL
+		cout << "after m[p5] = 555 " << endl;		// 4. 搜索key时候 先求key的hash_value 找到对应bulket(桶),然后在桶中 operator== 找到对应的value 
+		m[p5] = 555;
+#else
 		cout << "after m[p5] = 105 " << endl;
 		m[p5] = 105;								//  4. 可以通过map[key]=value来修改key对应的值
+#endif 
 
 		for (umap::iterator iter = m.begin(); iter != m.end(); iter++) {
 			cout << iter->first.name << "\t" << iter->first.age << "\t" << iter->second << "\tthis = " << &iter->first << endl;
-		}
+		} 
+		//	unordered_map本身可能有冲突的可能，所以每一个key的 hash value 对应一个bucket(std::list实现)
+		//	unordered_map是每个“hash value”对应一个bucket，不是一个“key”对应一个bucket
 	}
 
 	{
