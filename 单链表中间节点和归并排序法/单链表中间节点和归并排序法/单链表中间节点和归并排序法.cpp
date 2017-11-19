@@ -97,7 +97,7 @@ void mergeSort(Node* head) {
 			second = second->next;
 		}
 		if (second == NULL) break; //  代表这次size已经超过单链的长度
-
+								   //  同时 second也指向 在size队列长度下 第一个'相邻队列对'的第二个队列的第一个元素
 		while (1) { // TODO
 			first_size = size;
 			second_size = size;
@@ -133,12 +133,12 @@ void mergeSort(Node* head) {
 			}
 			current->next = second; // 排序后最后一个元素的next要指向second(second是下一个相邻队列第一个队列的元素)
 			if (current->next == NULL) break;
-									// current 上一个相邻队列的最后一个元素 
-			first = current->next;  // 下一个相邻队列 的开始
+									// current 上一个'相邻队列对'的最后一个元素 
+			first = current->next;  // 下一个'相邻队列对' 的开始
 			second = first;  
 			first_size = size;
-			while (second && first_size--) { // 下一个相邻队列的第二个队列的开始
-				second = second->next;		 // 跳过第一个队列 first_size个链表元素
+			while (second && first_size--) { // 下一个'相邻队列对'的第二个队列的开始
+				second = second->next;		 // 跳过 '相邻队列对'的第一个队列size个链表元素
 			}
 			if (second == NULL) break;
 		 
