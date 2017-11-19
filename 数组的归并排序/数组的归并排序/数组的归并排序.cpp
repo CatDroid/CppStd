@@ -74,14 +74,14 @@ void merge_sort (int array[], int length) {
 	int mid = 0;
 	int right = 0;
 
-	while (size <= length - 1) {
+	while (size < length) {
 		left = 0;
-		while (left + size  < length - 1 ) {
+		while (left + size  <= length - 1 ) { // left + size 是第二个队列的开始元素(序号)
 			mid = left + size - 1 ;   // 第一个队列的最后一个元素
 			right = left + size*2 - 1;// 第二个队列的最后一个元素
 			if (right > length - 1) right = length - 1;
 			sort(array, left, mid, right);
-			left += size*2 ;
+			left += size*2 ;		 // 下一组的开始元素
 		} 
 		size *= 2;  // 1 , 2 , 4, 8 , 16 ..... 
 				    // size = 1 代表两个队列的元素个数为1  [array[0]] 与 [array[1]] ..   left+=2*size 
@@ -95,7 +95,11 @@ void merge_sort (int array[], int length) {
 int main()
 {
 
-	int array[] = { 6, 1, 4 , 9, 3, 2, 12, -1, 19 , -100, 67 };
+	//int array[] = { 6, 1, 4 , 9, 3, 2, 12, -1, 19 , -100, 67 };
+	int array[] = { 6, 1, 4 , 9, 3, -1 };
+	//int array[] = { 6, 1 };
+	//int array[] = {1, 2 };
+	//int array[] = { 1 };
 
 	int length = sizeof(array) / sizeof(array[0]);
 	merge_sort(array, length);
