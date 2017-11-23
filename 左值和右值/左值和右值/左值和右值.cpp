@@ -54,61 +54,100 @@ public:
 };
 
 
+Base getBase() {
+	Base b;
+	return b; // 不会创建 临时对象返回 而是返回后的 对象构造使用 移动构造函数
+	// return Base() ; // 这样编译不加 -fno-elide-constructors 会被优化 只会有一次构造 不会有任何拷贝/移动构造函数
+}
+/*
+
+clang++ std=c++11 加 -fno-elide-constructors 打印: 
+	Base()
+	Base(Base && other)
+	~Base()
+	Base(Base && other)
+	~Base()
+	~Base()
+
+g++ 和clang++ 不加的话 return b ; 和 return Base();
+都只有 
+	Base()		不会有拷贝构造或者移动构造
+	~Base()
+
+vs2015 默认:
+	Base()
+	Base(Base && other)
+	~Base()
+	~Base()
+*/
+
+
 
 // std::move(foo)					std::move 返回 对象foo 的右值引用(rvalue reference) ,实现就是一个static_cast 
 // std::vector<std::unique_ptr<T>>	在容器 std::vector 中放入了不可复制只能移动的类的实例(std::unique_ptr 的拷贝构造函数是被删除的)
 
 int main()
 {
-	Base tempA;
-	Base tempB(std::move(tempA)); // 如果没有constructor(Base&& other) 那么就用 constructor(const Base& other) 但是不能改other
-								  // 如果都没有，就用默认的拷贝构造函数  注意buf的数据等于tempA的
- 
-	cout << hex << tempB.buf[2]  << endl;	// 0xccccccc
-	cout << hex << tempA.buf[2] << endl;	// 0xbb
+	{
+		Base tempA;
+		Base tempB(std::move(tempA)); // 如果没有constructor(Base&& other) 那么就用 constructor(const Base& other) 但是不能改other
+									  // 如果都没有，就用默认的拷贝构造函数  注意buf的数据等于tempA的
+
+		cout << hex << tempB.buf[2] << endl;	// 0xccccccc
+		cout << hex << tempA.buf[2] << endl;	// 0xbb
 
 
-	LINE
-	Base&& tempC = std::move(tempA);		// 0xbb
-	cout << hex << tempC.buf[2] << endl;
-	LINE
+		LINE
+		Base&& tempC = std::move(tempA);		// 0xbb
+		cout << hex << tempC.buf[2] << endl;
+		LINE
 
-	Base&& tempD = static_cast<Base&&>(tempA);// 0xbb 
-	cout << hex << tempD.buf[2] << endl;
-	LINE
+		Base&& tempD = static_cast<Base&&>(tempA);// 0xbb 
+		cout << hex << tempD.buf[2] << endl;
+		LINE
 
-	Base& tempE = std::move(tempA);			// OK 左值引用 绑定 右值引用 ??
-	LINE
+		Base& tempE = std::move(tempA);			// OK 左值引用 绑定 右值引用 ??
+		
+	}LINE
 
-	int a = 2;
-	cout << &a << endl;
-	int&& b = std::move(a);
-	const int& c = std::move(a);//	返回对象a的右值引用 
-	//int&& d = a;				//	右值引用 不能 绑定到左值
-	int&& d = a + 1;			//  右值引用 绑定到右值(临时变量)
-	//int& d = a++;				//	左值引用 不能 绑定到右值
-	const int& dd = a++;		//  常量左值引用 绑定 右值
-	//int& d = a;				//   
-	//const int& d = a;			//  
-	cout << &a << endl;
-	a = 3;
-	cout << a << endl;
+	{
+		int a = 2;
+		cout << &a << endl;
+		int&& b = std::move(a);
+		const int& c = std::move(a);//	返回对象a的右值引用 
+									//int&& d = a;				//	右值引用 不能 绑定到左值
+		int&& d = a + 1;			//  右值引用 绑定到右值(临时变量)
+									//int& d = a++;				//	左值引用 不能 绑定到右值
+		const int& dd = a++;		//  常量左值引用 绑定 右值
+									//int& d = a;				//   
+									//const int& d = a;			//  
+		cout << &a << endl;
+		a = 3;
+		cout << a << endl;
+
+		LINE
+		int& a_ref = a;
+		int& a_ref_ref = a_ref;		//	左值引用 本身 可以作为'左值' 或者 '右值'
+		a_ref_ref = 4;
+		int a_temp = ++a_ref;		//	前置自增运算符返回左值引用，在这里赋值给a_temp，此时'左值引用作为右值'
+		cout << a << endl;
+		//	右值引用本身也既可以作为左值也可以作为右值
+	}LINE
+						
+
+	{
+		People a_people("Alice");			//	传入右值 移动构造 
+		string b_people_name = "Bob";
+		People b_people(b_people_name);		//	传入左值 拷贝构造name
+	} LINE
+
+	{
+		Base funB = getBase();				 
+
+	}LINE
 	
-	LINE
-	int& a_ref = a;
-	int& a_ref_ref = a_ref;		//	左值引用 本身 可以作为'左值' 或者 '右值'
-	a_ref_ref = 4;
-	int a_temp = ++a_ref;		//	前置自增运算符返回左值引用，在这里赋值给a_temp，此时'左值引用作为右值'
-	cout << a << endl;		 
+
 	
-	LINE
-								//	右值引用本身也既可以作为左值也可以作为右值
-
-
-	People a_people("Alice");			//	传入右值 移动构造 
-	string b_people_name = "Bob";
-	People b_people(b_people_name);		//	传入左值 拷贝构造name
-
 
 	// 在C中 右值 是不能在赋值运算符左边的， 左值可以在任何一边
 	// 在C++中 一个表达式是左值还是右值，取决于我们使用的是'它的值'还是'它在内存中的位置'
