@@ -5,6 +5,8 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <memory>
 
 using namespace std;
 
@@ -26,7 +28,7 @@ public:
 	}
 
 	Base(const Base& other) { // 注意 如果自己实现了拷贝构造 buf的内容就要自己初始化
-		cout << "const A& other" << endl;
+		cout << "const Base& other" << endl;
 		//other.buf[1] = 0xBB;
 	}
 
@@ -38,6 +40,49 @@ public:
 	Base& operator = (const Base& other) {
 		cout << "opertor = (const A& other) " << endl;
 		return *this;
+	}
+};
+
+
+class VecBase {
+private:
+	int counter;
+public:
+	 
+	explicit VecBase(int temp) :counter(temp){
+		cout << "VecBase(int temp) = " << counter << endl;
+	}
+
+	~VecBase() {
+		cout << "~VecBase()" << endl;
+	}
+
+	VecBase(const VecBase& other) { 
+		cout << "const VecBase& other" << endl;
+		counter = other.counter;
+	}
+
+	VecBase(VecBase&& other) {
+		cout << "VecBase(VecBase && other) " << endl;
+		counter = other.counter;
+		other.counter = -1;
+	}
+
+	VecBase& operator = (const VecBase& other) {	// 拷贝赋值函数
+		cout << "opertor = (const VecBase& other) " << endl;
+		counter = other.counter;
+		return *this;
+	}
+
+	VecBase& operator = (VecBase&& other) {			// 移动赋值函数
+		cout << "opertor = (  VecBase&& other) " << endl;
+		counter = other.counter;
+		other.counter = -1;
+		return *this;
+	}
+
+	void dump() {
+		cout << "dump = " <<  counter << endl;
 	}
 };
 
@@ -58,7 +103,25 @@ Base getBase() {
 	Base b;
 	return b; // 不会创建 临时对象返回 而是返回后的 对象构造使用 移动构造函数
 	// return Base() ; // 这样编译不加 -fno-elide-constructors 会被优化 只会有一次构造 不会有任何拷贝/移动构造函数
-}
+};
+
+// 如果程序员声明了自定义的拷贝构造函数、拷贝赋值函数、移动赋值函数、析构函数中??还是移动构造函数??的一个或者多个，编译器都不会再为程序员生成默认版本。
+// 在C++11中，拷贝构造/赋值和移动构造/赋值函数必须同时提供，或者同时不提供，程序员才能保证类同时具有拷贝和移动语义。只声明其中一种的话，类都仅能实现一种语义。
+class DefaultMove {
+
+public:
+	~DefaultMove() {
+		cout << "~DefaultMove" << endl;
+	}
+
+	//DefaultMove() {
+	//	cout << "DefaultMove()" << endl;
+	//}
+
+	//DefaultMove(const DefaultMove& other) {
+	//	cout << "DefaultMove(const DefaultMove& other)" << endl;
+	//}
+};
 
 /*
 clang++ std=c++11 加 -fno-elide-constructors 打印: 
@@ -81,7 +144,43 @@ vs2015 默认:
 	~Base()
 */
 
+template <typename T>
+void callTemplateFun(T arg1, T arg2)
+{
+	cout << arg1 + arg2 << endl;
+}
 
+// 无法将常量左值引用 给到 非常量 左值引用
+// 传递值是OK的  ，可以用 常量左值引用(4种引用类型都可以) 来初始化 左值
+//void IrunCodeActually(int& t) { cout << "IrunCodeActually = " << t << endl;  }
+void IrunCodeActually(int t) { cout << "IrunCodeActually = " << t << endl; }
+template <typename T>
+void IamForwording(const T & t) { IrunCodeActually(t); }
+
+
+template <typename T, typename U>
+void PerfectForward(T &&t, U& Func) {
+	cout << t << "\tforwarded..." << endl;
+	Func(forward<T>(t));
+}
+
+// 同样的名字会导致 无法推动 模板参数 U 
+//void RunCode(double & left) { cout << "RunCode(double & left)" << endl; }
+void RunCodeL(double & left) { cout << "RunCodeL(double & left)" << endl; }
+void RunCode(double && m) { cout << "RunCode(double && m)"<< endl; }
+void RunHome(double && h) { cout << "RunHome(double && h) "<< endl; }
+void RunComp(double && c) { cout << "RunComp(double && c)" << endl; }
+
+
+void RightAndRight(Base && right) {
+	cout << "RightAndRight" << endl;
+}
+
+void Right(Base&& right) {
+	cout << "Right" << endl; // 右值引用 本身是个左值
+	//RightAndRight(right);// 无法将 右值引用绑定到左值
+	RightAndRight(static_cast<Base&&>(right));
+}
 
 // std::move(foo)					std::move 返回 对象foo 的右值引用(rvalue reference) ,实现就是一个static_cast 
 // std::vector<std::unique_ptr<T>>	在容器 std::vector 中放入了不可复制只能移动的类的实例(std::unique_ptr 的拷贝构造函数是被删除的)
@@ -107,7 +206,13 @@ int main()
 		LINE
 
 		Base& tempE = std::move(tempA);			// OK 左值引用 绑定 右值引用 ??
-		
+		LINE
+
+		cout << "返回值 是左值 会优先移动构造  其他情况按常量左值的拷贝构造" << endl;
+		Base nBase;			// Base()
+		Base n2Base(nBase); // const Base& other
+		LINE
+
 	}LINE
 
 	{
@@ -147,7 +252,68 @@ int main()
 	}LINE
 	
 
-	
+	{
+		DefaultMove dm;
+		DefaultMove dm2( std::move(dm)); // 即使有析构函数，还是会有默认的移动构造函数
+	}LINE 
+
+	{
+		callTemplateFun(1.2,4.5); // 模板函数可以不指定模板参数
+	}LINE
+
+	{
+		IamForwording(12);
+	}LINE
+
+	{
+		/* 完美转发: 
+			1. 不产生额外的开销 不会有临时对象拷贝  -- 需要传递引用类型
+			2. 转发函数 要支持 目标函数可能需要能够既接受左值引用，又接受右值引用 
+
+			“万能”的常量左值引用
+			但是，由于目标函数的参数类型是非常量左值引用类型，因此无法接受常量左值引用作为参数，
+			这样一来，虽然“转发函数的接受能力很高”，但在“目标函数的接受上却出了问题”
+			这需要通过一些常量和非常量的重载来解决目标函数的接受问题，但“函数参数比较多”的情况下，就会造成代码的冗余
+			
+			另外如果 ‘目标函数的参数是个右值引用’ 的话，同样无法接受任何‘左值’类型作为参数(需要std::move)，间接地，也就导致无法使用移动语义
+
+			“引用折叠”（reference collapsing）的新语言规则，并结合新的模板推导规则来完成完美转发
+		*/
+
+		double a = 2.1;
+		PerfectForward(a, RunCodeL);
+
+	}LINE
+
+	{
+		string str_a = "123456";
+		cout << str_a.length() << endl;
+		string str_b(std::move(str_a)); // 移动构造函数：字符串移到b上了
+		cout << "str_a=" << str_a << ":" << str_a.length() << endl;
+		cout << "str_b=" << str_b << ":" << str_b.length() << endl;
+	}LINE
+
+	{
+		cout << "std::vector的增长 重新分配内存会调用 移动构造函数!!" << endl;
+		// vector<VecBase> list(4) ; // 没有无参数构造函数 不能这样初始化vector长度
+		vector<VecBase> list ;
+		for (int i = 0; i < 16; i++) {
+			list.push_back(VecBase(i));
+		}
+	}LINE
+
+	{
+		unique_ptr<VecBase> old_ptr(new VecBase(555));
+		unique_ptr<VecBase> new_ptr;
+		new_ptr  = std::move(old_ptr); // unique_ptr的移动赋值运算符
+		cout << "old_ptr reset " << endl;
+		old_ptr.reset();
+		cout << "new_ptr reset " << endl;
+		new_ptr.reset();
+		cout << "unique_ptr reset end" << endl;
+	}LINE 
+
+
 
 	// 在C中 右值 是不能在赋值运算符左边的， 左值可以在任何一边
 	// 在C++中 一个表达式是左值还是右值，取决于我们使用的是'它的值'还是'它在内存中的位置'
