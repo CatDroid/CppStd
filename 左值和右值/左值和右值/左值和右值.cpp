@@ -61,25 +61,25 @@ public:
 		cout << "const VecBase& other" << endl;
 		counter = other.counter;
 	}
-
+	/*
 	VecBase(VecBase&& other) {
 		cout << "VecBase(VecBase && other) " << endl;
 		counter = other.counter;
 		other.counter = -1;
-	}
+	}*/
 
 	VecBase& operator = (const VecBase& other) {	// 拷贝赋值函数
 		cout << "opertor = (const VecBase& other) " << endl;
 		counter = other.counter;
 		return *this;
 	}
-
+ 
 	VecBase& operator = (VecBase&& other) {			// 移动赋值函数
 		cout << "opertor = (  VecBase&& other) " << endl;
 		counter = other.counter;
 		other.counter = -1;
 		return *this;
-	}
+	} 
 
 	void dump() {
 		cout << "dump = " <<  counter << endl;
@@ -300,6 +300,7 @@ int main()
 		for (int i = 0; i < 16; i++) {
 			list.push_back(VecBase(i));
 		}
+		// 重新分配内存时候 如果类不支持 移动构造函数 就会调用拷贝构造函数
 	}LINE
 
 	{
