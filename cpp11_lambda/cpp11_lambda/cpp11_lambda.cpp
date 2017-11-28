@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iostream>
 #include <vector>
+#include <functional>
 
 using namespace std ;
 
@@ -68,19 +69,48 @@ public:
 		return [this ,a]()->int{  return this->privateFun() * a ; /*friend*/ };
 	}
 
- 
-
+	auto getLambdaWithArgs() {
+		return [](MyClass * my)->int {  return my->more; /*调用时候传入类对象 访问类对象私有成员*/ };
+	}
 };
+
+
+auto getLambda()
+{
+	vector<string> temp;
+	temp.push_back(string("abc"));
+	temp.push_back(string("def"));
+	temp.push_back(string("yui"));
+
+	//vector<string>&& tempp = std::move(temp);
+	return [&temp]()->int {  return temp.size(); };
+}
+
+
+void setLambda(int a, int b , std::function<int(int, int)> ftn)
+{
+	cout << "std::function的使用 " << ftn(a, b) << endl;
+}
+
+template <typename Type, typename Fn>
+void setLambdaTemplate(Type a, Type b, Fn ftn) // 不是使用std::function 而是使用模板函数
+{
+	cout << "模板函数 传递lambda " << ftn(a, b) << endl;
+}
 
 /*
 	不仅具有函数指针的灵活性，还可以通过捕获局部变量提高可扩展性
 	Lambda表达式 把 函数 看作 对象
 	[](int x, int y) -> int { int z = x + y; return z + x; };
 	如果我们将 lambda表达式 比作 函数，可以看到它与“函数名”对应的是一对空的“方括号”，即“捕获表达式”
-	 
+	[] Lambda的捕获子句，也是引出Lambda的语法，当编译器看到这个符号时，就知道我们在写一个Lambda了
+	() Lambda的参数列表
+	{} Lambda的函数体
+
 	[](int x, int y) { return x + y; }
-	匿名函数的回返类型是 decltype(x+y)。只有在 lambda 函数符合"return expression"的形式下，它的返回类型才能被忽略
-	如果 lambda 函数没有传回值(例如 void )，其回返类型可被完全忽略
+	匿名函数的回返类型是 decltype(x+y)。只有在 lambda 函数符合"return expression"(只有一条返回语句)的形式下，它的返回类型才能被忽略
+	a.如果 lambda 函数没有传回值(例如 void )，其回返类型可被完全忽略
+	b.函数体只包含一条返回语句
 
 	传值/传引用:
 	[var]   传值方式（只读）将变量传递到匿名函数中
@@ -92,11 +122,15 @@ public:
 	定义在 与lambda函数 相同作用域的参数/引用 也可以被使用, 参数集合一般被称作 closure (闭包)
 	若不使用引用的符号&，则代表参数以传值的方式传入 lambda 函数  , "传值的话就是只读"
 
+	[&, a, &b]和[=, &a, b]这些写法是无效的 
+
 	捕捉非父作用范围的变量，或者非自变量（如，静态常量）等，都将导致编译错误。故可以看出，匿名函数
 	非动态函数，在编译期就定义了，故不会产生额外开销
 
 	lambda函数可以不在被声明的地方就地使用,若参数是以传引用的方式链接到 closure中,是无意义甚至是危险的行为
 	若lambda 函数只在定义的作用域使用， 则可以用 [&] 声明 lambda 函数，代表所有引用到栈/stack中的参数，都是以引用的方式传入
+
+	http://www.cnblogs.com/allenlooplee/archive/2012/07/03/2574119.html
 
 */
 int main()
@@ -140,12 +174,24 @@ int main()
 	}
 
 	{ // 多次调用  lambda表达式 (没有闭包 只是一个局部的匿名函数)
+	  // auto关键字相当于C#的var，编译器会根据我们用来初始化f1变量的值推断它的实际类型
+	  // 这个过程是静态的，"auto在编译时完成"
 		auto ftn = [](int x, int y) -> int { int z = x + y; return z + x; }; 
 		cout << ftn(3, 2) << endl; // 8
 		cout << ftn(3, 3) << endl; // 9 	
 	}
 
+	/*{
+		auto ftn = [](float x, float y)-> float {return x + y; };
+		ftn(4, 2);
+		ftn = [](int a)->int {return a + 1; };// 不支持赋值 不同类型
+	}*/
+
 	{
+		/*
+		   按值传递在声明Lambda的那一刻就已经确定变量的值了，无论之后外面怎么修改，里面只能访问到声明时传过来的版本
+		   按引用传递则刚好相反，里面和外面看到的是同一个东西，因此在调用Lambda之前外面的任何修改对里面都是可见的
+		*/
 		int total = 0;
 		int value = 5;
 		auto ftn = [&, value](int x) { total += (x * value); return total; };
@@ -160,14 +206,22 @@ int main()
 			someList.push_back(i);
 		}
 		int total = 0;
-		std::for_each(someList.begin(), someList.end(), [&total](int x) { total += x;});
-		cout << total << endl; // 45
+		std::for_each(someList.begin(), someList.end(), 
+			[&total](int& x)   /*注意这里有参数 是容器元素的类型 也开始是引用!*/
+			{ 
+				total += x;
+			}
+		);
+		cout << "std::for_each 容器vector+lambda表达式 " <<  total << endl; // 45
 	}
 
 	{
 		MyClass my(12);
 		auto ftn = my.getLambda(4); // 48
 		cout << ftn() << endl;
+		auto fun = my.getLambdaWithArgs(); // 闭包可以访问类的私有成员
+		MyClass my2(14);
+		cout << fun(&my2) << endl; // 14
 	}
 
 
@@ -189,6 +243,89 @@ int main()
 		auto myOnheapLambdaFunc = new auto( [=]()->int{ return 2; });
 		cout << (*myOnheapLambdaFunc)() << endl;  // 在堆上分配的lambda表达式
 		delete myOnheapLambdaFunc;
+	}
+
+	{
+		auto ftn = getLambda();
+		cout << ftn() << endl;
+	}
+
+	{
+		/*
+			mutable声明,使得我们可以在Lambda的函数体" 修改按值传递的变量" ，
+			但这些修改对Lambda以外的世界是不可见的，有趣的是，这些修改在Lambda的多次调用之间是共享的 
+			事实上，Lambda是函数对象（Function Object）的语法糖，
+			Lambda最终会被转换成 Functor类
+
+		*/
+		cout << "Lambda是函数对象" << endl;
+		int step = 2;
+		int i = 0;
+		std::vector<int> seq(10);
+		std::generate(seq.begin(), seq.end(),
+			[i, step]() mutable
+			{
+				return (i += step); // 传值的话 i 只读 , 需要加上 mutable  
+			}
+		);
+		cout << "std::generate使用闭包Lambda "<< endl;
+		std::for_each(seq.begin(), seq.end(),
+			[](int & temp) // 函数参数可以使用引用 !!
+			{
+				cout << temp << endl;
+			}
+		);
+
+		class Functor {
+		public:
+			Functor(int i, int step) :_i(i), _step(step) {}
+			int operator()() { return (_i += _step); } // 必须支持 operator() 
+			// 因为std::generate(,,Func)实际上就是调用 
+			// ret = Func() 
+			// Func可能是类的临时对象引用 也可是lambda ,这两者的调用方式都一样 
+		private:
+			int _i;
+			int _step;
+		};
+		std::vector<int> seq2(10);
+		std::generate(seq2.begin(), seq2.end(), Functor(0,3));
+		cout << "std::generate 使用 类 重载 operator()" << endl;
+		std::for_each(seq2.begin(), seq2.end(),
+			[](int & temp) // 函数参数可以使用引用 !!
+		{
+			cout << temp << endl;
+		}
+		);
+
+		cout << "--------------------------------------" <<endl;
+	}
+ 
+	{// 把Lambda作为参数  参数的类型 声明为 function模板类型，里面的类型参数反映了“Lambda的签名”： 两个int参数，一个int返回值
+	 // 调用的时候都是一样的，而且它们都能接受"Lambda或者函数对象"作为参数
+
+		setLambda(2, 4, [](int a, int b)->int { return a + 2 * b; }); // 10 
+
+		setLambdaTemplate(2, 4, [](int a, int b)->int {return a * 2 + b; }  ); // 8 
+	
+	
+		class Function final{
+		public:
+			Function() {
+				cout << "Function()" << endl;
+			}
+			~Function() {
+				cout << "~Function()" << endl;
+			}
+			int operator()(int a, int b) {
+				return a + b;
+			}
+		};
+
+		Function(); // 临时对象  与 Function instant(); <= 这是错误的
+	
+		setLambda(3, 2, Function()); // 5 
+		setLambdaTemplate(11, 22, Function()); // 33 
+
 	}
 
     return 0;
