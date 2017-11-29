@@ -72,6 +72,13 @@ void Person::setPersonType(PersonType person_type){
 //	return _person_type;
 //}
 // 新的返回值语法：因为函数的返回值出现在函数的最后，而不是前面，你不需要补全类作用域
+// 返回类型后置语法 语法形式为：auto 函数名(函数签名) -> 返回类型  
+// void f(int); 就将被改写为： auto f(int) -> void;
+// lambda	 [](int) -> void{}; 
+// lambda表达式使用[] 符号，而普通函数则使用auto关键字
+// 
+// http://www.cnblogs.com/ThatsMyTiger/p/7085309.html
+// http://blog.csdn.net/zwvista/article/details/5472096  
 auto Person::getPersonType() -> PersonType
 {
 	return _person_type;
@@ -83,6 +90,17 @@ auto makeAndProcessObject(const Builder& builder)  -> decltype(builder.makeObjec
 {
 	BuiltType val = builder.makeObject();
 	return val;
+}
+
+//  只用decltype而不用返回类型后置语法
+template<class T, class U> 
+decltype(*(T*)0 * *(U*)0) mul3(T x, U y) { 
+	return x*y; 
+} 
+
+template<class T, class U> 
+decltype(std::declval<T>()*std::declval<U>())  mul4(T x, U y) { 
+	return x*y; 
 }
 
 
