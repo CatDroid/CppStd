@@ -6,6 +6,7 @@
 #include<string>  
 #include<iostream>  
 #include<unordered_map>  
+#include<unordered_set>
 #include<map>
 using namespace std;
 
@@ -181,6 +182,43 @@ public:
 
 
 
+// 定义两个普通的c类型的函数，实现hash以及对象比较
+// 需要使用 关键字 decltype 来减少显示声明它的类型
+// decltype与auto关键字一样,用于进行编译时类型推导
+struct Record
+{
+	string name;
+	int val;
+};
+
+size_t RecordHash(const Record& rhs) {
+	return hash<string>()(rhs.name) ^ hash<int>()(rhs.val);
+}
+bool RecordCmp(const Record& lhs, const Record& rhs) {
+	return lhs.name == rhs.name && lhs.val == rhs.val;
+}
+
+unordered_set<Record, decltype(&RecordHash), decltype(&RecordCmp)> records = {
+	0,
+	RecordHash, RecordCmp
+};
+
+// 在main函数之前执行某个函数
+struct RunBeforeMain
+{
+	RunBeforeMain() {
+		cout << "RunBeforeMain " << endl;
+		cout << "unordered_set before insert " << records.size() << endl;
+		records.insert({ "a", 100 });  
+		records.insert({ "b", 100 });
+		records.insert({ "c", 100 });
+		cout << "unordered_set after  insert " << records.size() << endl;
+	}
+};
+static RunBeforeMain dummyObject;
+
+
+
 int main()
 {
 	{
@@ -239,6 +277,13 @@ int main()
 			cout << itor->first.name << "\t" << itor->first.age << endl;
 		}
 
+	}
+
+	// 使用自定义C函数 实现hash和equal_to  , 同时这里也不能写简写成 std::unordered_set<Record>  
+	//for (std::unordered_set<Record>::iterator itor = records.begin(); itor != records.end(); itor++) {
+	typedef unordered_set<Record, decltype(&RecordHash), decltype(&RecordCmp)> RecordSet;
+	for( RecordSet::iterator itor = records.begin(); itor != records.end(); itor++ ){
+		printf("unordered_set : %s %d \n" , (*itor).name.c_str() , (*itor).val );//(*itor); // 返回 const Record& 
 	}
 	
 	return 0;
