@@ -70,8 +70,10 @@ public:
 		return p.age;
 #else 
 		size_t seed = 0;
-		hash_combine(seed, std::hash_value(p.name));
-		hash_combine(seed, std::hash_value(p.age));
+		// hash_combine(seed, std::hash_value(p.name));
+		// hash_combine(seed,std::hash_value(p.age));
+		hash_combine(seed, std::hash<string>()(p.name));
+		hash_combine(seed, std::hash<int>()(p.age));
 		return seed;
 #endif 	
 	}
@@ -131,6 +133,33 @@ public:
 		return lhs.name == rhs.name && lhs.age == rhs.age;
 	}
 };
+
+namespace std
+{	//  另外一种实现  模板类 std::hash 和  std::equal_to  特例化
+	template <>
+	struct hash<Person>
+	{
+		std::size_t operator()(const Person &key) const {
+#if SAME_HASH_VALUE_BUT_NOT_EQUAL
+			return p.age;
+#else 
+			size_t seed = 0;
+			hash_combine(seed, std::hash<string>()(key.name));
+			hash_combine(seed, std::hash<int>()(key.age));
+			return seed;
+#endif 	
+		}
+	};
+
+	template<>
+	struct equal_to < Person > {
+		bool operator()(const Person& lhs, const Person& rhs) const {
+			return lhs.name == rhs.name && lhs.age == rhs.age;
+			 
+		}
+	};
+}
+
 
 
 class Cat		// 测试std::map 
