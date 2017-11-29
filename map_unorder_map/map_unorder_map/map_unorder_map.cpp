@@ -1,4 +1,4 @@
-// map_unorder_map.cpp : 定义控制台应用程序的入口点。
+﻿// map_unorder_map.cpp : 定义控制台应用程序的入口点。
 //
 
 #include "stdafx.h"
@@ -53,6 +53,13 @@ inline void hash_combine(std::size_t& seed, const T& val){
 	seed ^= std::hash<T>()(val)  + 0x9e3779b9 + (seed << 6) + (seed >> 2);
 }
 
+/*
+
+std::hash_value是MSVC STL的非标准扩展。不可移植，不保证在以后的版本一直可用
+
+std::hash是标准定义的类。所有遵从C++11/14的标准库实现都必须定义，在可预见的未来会一直可用
+
+*/
 //	Hash函数
 class PersonHash
 {
@@ -66,9 +73,30 @@ public:
 		hash_combine(seed, std::hash_value(p.name));
 		hash_combine(seed, std::hash_value(p.age));
 		return seed;
-#endif 
-		
+#endif 	
 	}
+
+	PersonHash() {
+		cout << "PersonHash无参构造" << endl;
+	}
+	PersonHash(const PersonHash& other) {
+		cout << "PersonHash拷贝构造" << endl;
+	}
+	PersonHash(PersonHash&& other) {
+		cout << "PersonHash移动构造" << endl;
+	}
+	~PersonHash() {
+		cout << "~PersonHash析构" << endl;
+	}
+	PersonHash& operator=(const PersonHash& other) {
+		cout << "PersonHash 拷贝赋值函数" << endl;
+		return *this;
+	}
+	PersonHash& operator=(PersonHash&& other) {
+		cout << "PersonHash 移动赋值函数" << endl;
+		return *this;
+	}
+
 };
 
 
@@ -76,6 +104,28 @@ public:
 class PersonKey
 {
 public:
+	PersonKey() {
+		cout << "PersonKey无参构造" << endl;
+	}
+	PersonKey(const PersonKey& other) {
+		cout << "PersonKey拷贝构造" << endl;
+	}
+	PersonKey(PersonKey&& other) {
+		cout << "PersonKey移动构造" << endl;
+	}
+	~PersonKey() {
+		cout << "~PersonKey析构" << endl;
+	}
+	PersonKey& operator=(const PersonKey& other) {
+		cout << "PersonKey 拷贝赋值函数" << endl;
+		return *this;
+	}
+ 
+	PersonKey& operator=( PersonKey&& other) {
+		cout << "PersonKey 移动赋值函数" << endl;
+		return *this;
+	}
+
 	bool operator() (const Person &lhs, const Person &rhs) const
 	{
 		return lhs.name == rhs.name && lhs.age == rhs.age;
