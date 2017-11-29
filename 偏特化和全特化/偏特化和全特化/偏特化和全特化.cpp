@@ -66,38 +66,6 @@ namespace std
 }
 
 
-// 定义两个普通的c类型的函数，实现hash以及对象比较
-// 需要使用 关键字 decltype 来减少显示声明它的类型
-// decltype与auto关键字一样,用于进行编译时类型推导
-struct Record
-{
-	string name;
-	int val;
-};
-
-size_t RecordHash(const Record& rhs) {
-	return hash<string>()(rhs.name) ^ hash<int>()(rhs.val);
-}
-bool RecordCmp(const Record& lhs, const Record& rhs) {
-	return lhs.name == rhs.name && lhs.val == rhs.val;
-}
-
-unordered_set<Record,  decltype(&RecordHash), decltype(&RecordCmp)> records;
-
-// 在main函数之前执行某个函数
-struct RunBeforeMain
-{
-	RunBeforeMain() {
-		cout << "RunBeforeMain " << endl;
-		//records.insert({ "a", 100 });  
-		//records.insert({ "b", 100 });
-		//records.insert({ "c", 100 });
-	}
-};
-static RunBeforeMain dummyObject;
-
-
-
 
 
 int main()
@@ -146,11 +114,7 @@ int main()
 		cout << "Find Key Fail in unordered_map " << endl;
 	}
 
-	// 使用自定义C函数 实现hash和equal_to 
-	//for (std::unordered_set<Record>::iterator itor = records.begin(); itor != records.end(); itor++) {
-	//	//(*itor); // 返回 const Record& 
-	//	printf("uset : %s %d \n" , (*itor).name.c_str() , (*itor).val );
-	//}
+
 
     return 0;
 }
