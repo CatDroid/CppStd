@@ -20,8 +20,9 @@ public:
 	float c;
 public:
 	Foo() :a(0), b(0), c(0) { cout << "Foo的无参构造函数" << endl; }
-	Foo(int temp) :a(temp), b(0), c(0) { cout << "Foo的单参构造函数" << endl;  }
-	Foo(float t1, float t2):a(0),b(t1),c(t2) { cout << "Foo的双参构造函数" << endl;  }
+	/*explicit*/ Foo(int temp) :a(temp), b(0), c(0) { cout << "Foo的单参构造函数" << endl;  }
+	/*explicit*/ Foo(float t1, float t2):a(0),b(t1),c(t2) { cout << "Foo的双参构造函数" << endl;  }
+	// 要使用 initialzer_list , 必须支持隐式构造 
 
 	Foo(Foo&& rhs) :a(rhs.a), b(rhs.b), c(rhs.c) { // std::vector容器需要移动构造函数
 		rhs.a = 0; rhs.b = 0; rhs.c = 0;
@@ -303,9 +304,11 @@ int main()
 	std::vector<double>    vec_d{ 0.0,0.1,0.2,0.3, 0.4, 0.5 };
 
 	//std::vector<Foo>  vec_foo{ 0.0,0.1,0.2,0.3,0.4,0.5 };	// 无法从'double'转换到'Foo' 需要收缩转换
-	//std::vector<Foo>  vec_foo{ 0, 1 , 2 , 3 , 4 , 5  };			// 单参数构造函数 	 
-	std::vector<Foo>  vec_foo{ {0}, {1} , {2} , {3} , {4} , {5} };	// 单参数(或者是initializer_list<float>的构造) 
-	//std::vector<Foo>  vec_foo{ { 1.0f, 66.6f },{ 2.0f, 66.6f } ,{ 3.0f, 66.6f } ,{ 4.0f, 66.6f } };// 无法访问private成员 Foo(const Foo &); 不会使用 Foo(Foo&&) 构造??
+	//std::vector<Foo>  vec_foo{ 0, 1/*隐式构造*/ , 2 , 3 , 4 , 5  };			// 单参数构造函数 (必须支持隐式构造)	 
+	//std::vector<Foo>  vec_foo{ {0}, {1} , {2} , {3} , {4} , {5} };	// 单参数(或者是initializer_list<float>的构造) 
+	std::vector<Foo>  vec_foo{ { 1.0f, 66.6f }/*隐式构造*/,{ 2.0f, 66.6f } ,{ 3.0f, 66.6f } ,{ 4.0f, 66.6f } };
+	// 无法访问private成员 Foo(const Foo &); 不会使用 Foo(Foo&&) 构造 ， 因为std::initializer_list.begin返回的是const Foo*  
+	// 
 	// vs2015/clang++ 都是 双参构造函数(或者是initializer_list<float>的构造 不能是<int>) + 拷贝构造函数 
 
 	for (std::vector<Foo>::iterator itor = vec_foo.begin(); itor < vec_foo.end(); itor++) {
@@ -339,6 +342,7 @@ int main()
 		cout << "函数 传递 相同类型变长参数 std::initializer_list" << endl;
 		func({ MyElem(111) , MyElem(222), MyElem(333) });  
 	}cout << "------------------------------ " << endl;
+
 
 	cout << endl;
     return 0;
