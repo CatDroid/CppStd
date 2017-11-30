@@ -115,6 +115,10 @@ public:
 		other.counter = -1;
 		return *this;
 	}
+
+	int get() const {
+		return counter;
+	}
 };
 
 
@@ -141,6 +145,15 @@ public:
 	}
 };
 
+// 相同类型 变长参数
+void func(std::initializer_list<MyElem> list)
+{
+	for (auto it = list.begin(); it != list.end(); it++)
+	{// const MyElem* it 
+		cout << it->get() << endl; // 因为指针是const的 所以get必须 限定const 才能调用
+	}
+
+}
 
 int main()
 {
@@ -291,8 +304,8 @@ int main()
 
 	//std::vector<Foo>  vec_foo{ 0.0,0.1,0.2,0.3,0.4,0.5 };	// 无法从'double'转换到'Foo' 需要收缩转换
 	//std::vector<Foo>  vec_foo{ 0, 1 , 2 , 3 , 4 , 5  };			// 单参数构造函数 	 
-	//std::vector<Foo>  vec_foo{ {0}, {1} , {2} , {3} , {4} , {5} };	// 单参数(或者是initializer_list<float>的构造) 
-	std::vector<Foo>  vec_foo{ { 1.0f, 66.6f },{ 2.0f, 66.6f } ,{ 3.0f, 66.6f } ,{ 4.0f, 66.6f } };// 无法访问private成员 Foo(const Foo &); 不会使用 Foo(Foo&&) 构造??
+	std::vector<Foo>  vec_foo{ {0}, {1} , {2} , {3} , {4} , {5} };	// 单参数(或者是initializer_list<float>的构造) 
+	//std::vector<Foo>  vec_foo{ { 1.0f, 66.6f },{ 2.0f, 66.6f } ,{ 3.0f, 66.6f } ,{ 4.0f, 66.6f } };// 无法访问private成员 Foo(const Foo &); 不会使用 Foo(Foo&&) 构造??
 	// vs2015/clang++ 都是 双参构造函数(或者是initializer_list<float>的构造 不能是<int>) + 拷贝构造函数 
 
 	for (std::vector<Foo>::iterator itor = vec_foo.begin(); itor < vec_foo.end(); itor++) {
@@ -322,6 +335,10 @@ int main()
 	}cout << "-------------}--------------" << endl; // 这里释放MyVec容器和内部元素MyElem
 	
 
+	{// std::initializer_list   a.用于自定义类型的列表初始化方法   b. 传递相同类型数据的集合
+		cout << "函数 传递 相同类型变长参数 std::initializer_list" << endl;
+		func({ MyElem(111) , MyElem(222), MyElem(333) });  
+	}cout << "------------------------------ " << endl;
 
 	cout << endl;
     return 0;
