@@ -19,11 +19,126 @@ public:
 	float b;
 	float c;
 public:
-	Foo():a(0),b(0),c(0){}
-	Foo(int temp) :a(temp), b(0), c(0) {}
-	Foo(float t1, float t2):a(0),b(t1),c(t2) {}
+	Foo() :a(0), b(0), c(0) { cout << "Foo的无参构造函数" << endl; }
+	Foo(int temp) :a(temp), b(0), c(0) { cout << "Foo的单参构造函数" << endl;  }
+	Foo(float t1, float t2):a(0),b(t1),c(t2) { cout << "Foo的双参构造函数" << endl;  }
+
+	Foo(Foo&& rhs) :a(rhs.a), b(rhs.b), c(rhs.c) { // std::vector容器需要移动构造函数
+		rhs.a = 0; rhs.b = 0; rhs.c = 0;
+		cout << "Foo的移动构造函数 "<< endl;
+	}
+public:
+//private:
+	Foo(const Foo & other ):a(other.a),b(other.b),c(other.c) {
+		cout << "Foo的拷贝构造函数 " << endl;
+	}
+ 
+
+	/*
+	用std::initialzer_list将类改写，类Foo也具有了接受可变长参数的能力
+	'固定数目的'数据成员来说使用std::initialzer_list来改写后，
+	如果'列表初始化的参数' 刚好是3个则数据成员完全初始化，如果列表初始化的个数小于3个则未给予的值是一个随机值
+
+	虽然std::initialzer_list可以改写我们自定义的类
+	但是对于用于固定的数据成员的类来说这种改写意义不大
+	除非 如果我们自定义的类也是一个容器类
+	*/
+#if 0 
+	Foo(std::initializer_list<float> list){
+		cout << "initializer_list构造函数 " << endl;
+		auto it = list.begin(); // const int*
+		if (it == list.end()) cout << "initializer_list构造函数 a end " << endl; 
+		a = *it++;
+		if (it == list.end()) cout << "initializer_list构造函数 b end " << endl;
+		b = *it++;
+		if (it == list.end()) cout << "initializer_list构造函数 c end " << endl;
+		c = *it++;
+
+	}
+#endif 
+
+};
+
+
+class FooVec
+{
 private:
-	Foo(const Foo &);
+	std::vector<int> m_vec;
+public:
+	/*
+		自定义的容器类，和STL中的容器类，一样拥有“接受可变长”“相同数据类型”的数据的能力
+		注意数据类型必须相同
+	*/
+	FooVec(std::initializer_list<int> list) // 数据类型必须是int 
+	{
+		cout << "initializer_list构造函数 " << endl;
+		for (auto it = list.begin(); it != list.end(); it++)
+			m_vec.push_back(*it);
+	}
+};
+
+
+
+class MyElem{
+private:
+	int counter;
+public:
+
+	explicit MyElem(int temp) :counter(temp) {
+		cout << "VecBase(int temp) = " << counter << " " << this << endl;
+	}
+
+	~MyElem() {
+		cout << "~VecBase() " << this << endl;
+	}
+
+	MyElem(const MyElem& other) {
+		cout << "VecBase(const VecBase& other) " << this << " other " << &other << endl;
+		counter = other.counter;
+	}
+
+	MyElem(MyElem&& other) {
+		cout << "VecBase(VecBase && other) " << this << " other " << &other << endl;
+		counter = other.counter;
+		other.counter = -1;
+	}
+
+	MyElem& operator = (const MyElem& other) {	// 拷贝赋值函数
+		cout << "opertor= (const VecBase& other) " << this << " other " << &other << endl;
+		counter = other.counter;
+		return *this;
+	}
+
+	MyElem& operator = (MyElem&& other) {	    // 移动赋值函数
+		cout << "opertor = (  VecBase&& other) " << this << endl;
+		counter = other.counter;
+		other.counter = -1;
+		return *this;
+	}
+};
+
+
+class MyVec
+{
+private:
+	std::vector<MyElem> m_vec;
+public:
+	/*
+	自定义的容器类，和STL中的容器类，一样拥有“接受可变长”“相同数据类型”的数据的能力
+	注意数据类型必须相同
+	*/
+	MyVec(std::initializer_list<MyElem> list) // 数据类型必须是int 
+	{
+		cout << "initializer_list构造函数 " << endl;
+		for (auto it = list.begin(); it != list.end(); it++) {
+			cout << " -----*------ " << endl;
+			m_vec.push_back(  (*it) );  // 返回的是 const _Elem *
+			cout << " -----^----- "<< endl;
+			// 第一次push进入 是用 拷贝构造(因为是const _Elem* )
+			// 重新分配内存 使用 移动构造 
+		}
+			
+	}
 };
 
 
@@ -102,7 +217,7 @@ int main()
 			d.无虚函数
 			e.无{}和=直接初始化的非静态数据成员  
 
-		非聚合体的类型 列表初始化是给到构造函数 所以必须有对应参数的构造函数
+		非聚合体的类型 列表初始化是给到构造函数,所以必须有对应参数的构造函数
 						否则列表初始化只能是空的,调用无参构造函数
 	*/
 	struct A1{
@@ -166,6 +281,46 @@ int main()
 	};
 	NonAggregate non_a{ 123,456,789 };
 	cout << "非聚类体 自定义构造函数+成员初始化列表 : " << non_a.x << " " << non_a.y << endl;
+
+
+	// 在C++11中，对于任意的STL容器，都与 没有显式指定长度的数组 一样的初始化能力
+	int arr_no_length[] = { 1, 2, 3, 4, 5 };
+	std::map < int, int >  map_t{ { 1, 2 },{ 3, 4 },{ 5, 6 },{ 7, 8 } };
+	std::list<std::string> list_str{ "hello", "world", "china" };
+	std::vector<double>    vec_d{ 0.0,0.1,0.2,0.3, 0.4, 0.5 };
+
+	//std::vector<Foo>  vec_foo{ 0.0,0.1,0.2,0.3,0.4,0.5 };	// 无法从'double'转换到'Foo' 需要收缩转换
+	//std::vector<Foo>  vec_foo{ 0, 1 , 2 , 3 , 4 , 5  };			// 单参数构造函数 	 
+	//std::vector<Foo>  vec_foo{ {0}, {1} , {2} , {3} , {4} , {5} };	// 单参数(或者是initializer_list<float>的构造) 
+	std::vector<Foo>  vec_foo{ { 1.0f, 66.6f },{ 2.0f, 66.6f } ,{ 3.0f, 66.6f } ,{ 4.0f, 66.6f } };// 无法访问private成员 Foo(const Foo &); 不会使用 Foo(Foo&&) 构造??
+	// vs2015/clang++ 都是 双参构造函数(或者是initializer_list<float>的构造 不能是<int>) + 拷贝构造函数 
+
+	for (std::vector<Foo>::iterator itor = vec_foo.begin(); itor < vec_foo.end(); itor++) {
+		const Foo& thing = (*itor);
+		cout << "thing [" << thing.a << " " << thing.b << " " << thing.c << " ]" << endl;
+	}
+
+	// 使用'列表初始化方法'是将'initializer-list'转换成对应的类类型
+	
+	// STL容器 跟 数组一样 可以 填入 任何需要的任何长度的同类型的数据
+	// 而我们自定义的Foo类型，却不具备这种能力，只能按照构造函数的初始化列表顺序，进行依次赋值
+	
+	// 实际上之所以STL容器，拥有这种可以用任意长度的"同类型数据"，进行初始化能力，
+	// 是因为STL中的容器，使用了std::initialzer_list这个轻量级的类模板
+	
+	// std::initialzer_list<T> 可以接受任意长度的"同类型" 的数据，也就是接受可变长参数{ ... }
+
+
+	//FooVec foo1{ 1, 2.0 , 3, 4, 5, 6 }; // 只要出现不同类型 就不能用类中定义的initialzer_list构造函数
+	//FooVec foo2{ 1.0f, 2.0f, 3.0f, 4.0f, 5.0f, 6.0f, 7.0f, 8.0f, 9.0f };
+	FooVec foo2{ 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+	{// 自定义数据类型的自定义容器
+		cout << "自定义容器 的 自定义数据类型：" << endl;
+		MyVec myFoo{ MyElem(4) , MyElem(5), MyElem(6) };
+		cout << "-------------{----------------" << endl; // 这里释放了匿名的对象MyElem
+	}cout << "-------------}--------------" << endl; // 这里释放MyVec容器和内部元素MyElem
+	
 
 
 	cout << endl;
