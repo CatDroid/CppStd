@@ -8,6 +8,21 @@
 
 using namespace std;
 
+class Foo
+{
+public:
+	int a;
+	float b;
+	float c;
+public:
+	Foo():a(0),b(0),c(0){}
+	Foo(int temp) :a(temp), b(0), c(0) {}
+	Foo(float t1, float t2):a(0),b(t1),c(t2) {}
+private:
+	Foo(const Foo &);
+};
+
+
 int main()
 {
 	// 列表初始化 
@@ -30,6 +45,96 @@ int main()
 
 	//b = equal(v1.begin(), v1.end(), v4.begin()  );  // crash !!
 	//cout << "v1 and v4 are equal with dual-range overload: " << b << endl; 
+
+
+	// C++98/03中  只能对 普通数组 和 
+	// POD(plain old data 简单来说就是可以用memcpy复制的对象 )类型 可以使用"列表初始化"
+	int arr[] = { 1,2,3 };	// 数组 初始化
+	struct A
+	{
+		int x;
+		int y;
+	}a = { 1,2 };			// 结构体变量 初始化
+
+	// C++11中为了统一初始化方式,提出了列表初始化(list-initialization),可以作用于任何类型对象的初始化
+
+	Foo a1(123);	// 调用Foo(int)构造函数初始化  
+	Foo a2 = 123;	// 隐式调用Foo(int)构造函数
+	//Foo a3 = a2;	// ERROR Foo的拷贝构造函数声明为私有的 
+
+	Foo a3 = { 123 }; // 列表初始化  
+	Foo a4{ 123 };	  // 列表初始化  都是调用Foo(int)构造函数
+
+	int a5 = { 3 };	  // C++98/03所不具备的，是C++11新增的写法
+	int a6 { 3 };
+	double af = double{ 12.12 };
+
+	// 列表初始化方法 适用于用new操作等圆括号进行初始化
+	int* a7  = new int(3);
+	int* a8  = new int{3};	// 都是值为3的int 
+	int* a9  = new int[5]();// 都初始化为0
+	int* a10 = new int[5];	// 元素值不确定
+	int * a12 = new int[5]{ 1, 2, 3 }; // C++11可以在创建数组时候初始化元素 , 其他初始化为0 
+
+	printf("new int(3)	%d 0x%x 0x%x 0x%x 0x%x \n", a7[0], a7[1], a7[2], a7[3], a7[4]);
+	printf("new int{3}	%d 0x%x 0x%x 0x%x 0x%x \n", a8[0], a8[1], a8[2], a8[3], a8[4]);
+	printf("new int[5]()	%d %d %d %d %d \n",			a9[0],  a9[1],  a9[2],  a9[3],  a9[4]);
+	printf("new int[5]	0x%x 0x%x 0x%x 0x%x 0x%x \n",a10[0], a10[1], a10[2], a10[3], a10[4]);
+	printf("new int[5]{1,2,3} %d %d %d %d %d \n",		a12[0], a12[1], a12[2], a12[3], a12[4]);
+
+	// 复杂类型数组 的 列表初始化
+	Foo* foo_list = new Foo[3]{ {11.0,1.0},{22.0,1.0} }; // 仅当类存在无参构造函数 列表初始化才能没有
+	cout << "foo_list: " << endl;
+	printf("[0] = %d %f %f\n", foo_list[0].a, foo_list[0].b, foo_list[0].c);
+	printf("[1] = %d %f %f\n", foo_list[1].a, foo_list[1].b, foo_list[1].c);
+	printf("[2] = %d %f %f\n", foo_list[2].a, foo_list[2].b, foo_list[2].c);
+	
+
+	/* 普通的POD类型 和 聚合体 aggregate 
+		C++中关于类是否是一个聚合体的定义
+			a.无用户自定义构造函数 
+			b.无私有private或者受保护protected的非静态数据成员
+			c.无基类
+			d.无虚函数
+			e.无{}和=直接初始化的非静态数据成员 
+
+		非聚合体的类型 列表初始化是给到构造函数 所以必须有对应参数的构造函数
+						否则列表初始化只能是空的,调用无参构造函数
+	*/
+	struct A1{
+		int x;
+		int y;
+	}A1a1 = { 123, 321 };// 相当于直接memcopy到结构体
+	// .x = 123 .y = 321  
+	struct B1{
+		int x;
+		int y;
+		B1(int, int) :x(0), y(0) { cout <<"B1(int, int) call" << endl; }
+		// 成员初始化列表
+	}B1b1 = { 123, 321 }; // 列表初始化给到构造函数 
+	// .x = 0  .y = 0 
+	struct C1 {
+	protected:
+		int z;
+	public:
+		int x;
+		int y;
+	} C1c1 = {};// { 1, 2, 4 }; 有保护或私有的非static成员,列表初始化会调用构造函数,必须有对应的构造函数
+	// .x=0 .y=0
+
+	struct D1 {
+		int x;
+		int y;
+		virtual void vfun() {};// 类含有基类或者虚函数,必须要有对应构造函数,才能有列表初始化,否则列表初始化只能是空的,调用无参构造函数
+		D1(int t1,int t2):x(t1),y(t2){}
+	};
+	D1 D1d1{ 123,456 };   // 调用(int,int)构造函数 
+
+	printf("普通的POD类型                       .x %d .y %d\n", A1a1.x, A1a1.y );
+	printf("非聚合体的类 要有对应 构造函数      .x %d .y %d\n", B1b1.x, B1b1.y);
+	printf("保护或私有的非static成员 列表初始化 .x %d .y %d\n", C1c1.x, C1c1.y);
+	printf("类含有基类或者虚函数     列表初始化 .x %d .y %d\n", D1d1.x, D1d1.y);
+
 
     return 0;
 }
