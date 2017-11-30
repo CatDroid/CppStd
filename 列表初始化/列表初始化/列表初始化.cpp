@@ -371,6 +371,30 @@ int main()
 		cout << *itor << endl; // 非法未知的内容
 	}
 
+
+	/*
+		列表初始化防止"类型收窄"
+
+		C++11的列表初始化 
+		
+		可以防止类型收窄(C++98/03中的隐式类型转换),将范围大的转换为范围小的表示
+		
+		在C++98/03中，类型收窄并不会编译出错
+		在C++11中，使用列表初始化的类型收窄编译将会报错
+	*/
+
+	float f11 = 2;
+	float f11_init{ 2 }; // int -> float OK 
+
+	int i11 = 2.1;
+	//int i11_init{ 2.1 }; // ERROR  double转换到int 需要收缩转换
+
+	const int x = 1024, y = 127 ;
+	char c = x;  //OK   会被截断 
+	//char d{ x };//error   int --> char 类型变窄 需要收缩变换
+	char e = y; // OK  
+	char f{ y };// 超过127 就会编译错误  
+
 	cout << endl;
     return 0;
 }
