@@ -156,6 +156,16 @@ void func(std::initializer_list<MyElem> list)
 
 }
 
+// initialzer_list<T>保存的是T类型的引用，并不对T类型的数据进行拷贝
+// 注意变量的生存期
+std::initializer_list<int> initializer_out_of_range(void){
+	int a = 2, b = 3;
+	//return{ new int(2), new int(3) };
+	//return { 2 ,3 };
+	return{ a, b }; // 返回的 std::initializer_list 实例 内部包含指针指向 数据
+}
+
+
 int main()
 {
 	// 列表初始化 
@@ -343,6 +353,23 @@ int main()
 		func({ MyElem(111) , MyElem(222), MyElem(333) });  
 	}cout << "------------------------------ " << endl;
 
+	/*
+	std::initialzer_list
+	1. 轻量级的容器类型 , 内部定义了迭代器iterator等容器必须的一些概念
+	2. 可以接受任意长度的初始化列表, 元素必须是要相同的或者可以转换为T类型的
+	std::initialzer_list<T>   { {a1,b1,c1}, {a2,b2,c2}, {a3,b3,c3} <-调用T的构造函数   }
+	std::initialzer_list<T>   { a1 , a2 , a3 <- 也是调用T的构造函数    }
+	3. 	只有三个成员接口，begin(),end(),size()
+	4.  它只能被整体的初始化和赋值，遍历只能通过begin和end迭代器来，
+		遍历取得的数据是可读的，是不能对单个进行修改的(const T*)
+	5.  initialzer_list<T>保存的是T类型的引用，并不对T类型的数据进行拷贝，因此需要注意变量的生存期
+	*/
+
+	std::initializer_list<int> out_of_range =  initializer_out_of_range();
+	for (std::initializer_list<int>::iterator itor = out_of_range.begin();
+		itor < out_of_range.end(); itor++) {
+		cout << *itor << endl; // 非法未知的内容
+	}
 
 	cout << endl;
     return 0;
