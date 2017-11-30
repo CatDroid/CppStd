@@ -4,7 +4,11 @@
 #include "stdafx.h"
 
 #include <iostream>
+
+#include <map>
+#include <list>
 #include <vector>
+#include <string>
 
 using namespace std;
 
@@ -96,7 +100,7 @@ int main()
 			b.无私有private或者受保护protected的非静态数据成员
 			c.无基类
 			d.无虚函数
-			e.无{}和=直接初始化的非静态数据成员 
+			e.无{}和=直接初始化的非静态数据成员  
 
 		非聚合体的类型 列表初始化是给到构造函数 所以必须有对应参数的构造函数
 						否则列表初始化只能是空的,调用无参构造函数
@@ -130,12 +134,41 @@ int main()
 	};
 	D1 D1d1{ 123,456 };   // 调用(int,int)构造函数 
 
+	struct E1 {
+		int x;
+		int y = 5;		 //  {}或者=直接初始化的非静态数据成员
+		//E1(int t1 , int t2):x(t1),y(t2){} // 没有这个构造函数 { 2,3 }列表初始化就编译错误
+	};
+	//E1 E1e1{ 2,3 };		 //  无法从"inializer list" 转换为 main::E1 
+
 	printf("普通的POD类型                       .x %d .y %d\n", A1a1.x, A1a1.y );
 	printf("非聚合体的类 要有对应 构造函数      .x %d .y %d\n", B1b1.x, B1b1.y);
 	printf("保护或私有的非static成员 列表初始化 .x %d .y %d\n", C1c1.x, C1c1.y);
 	printf("类含有基类或者虚函数     列表初始化 .x %d .y %d\n", D1d1.x, D1d1.y);
+	printf("类中 非静态数据成员 直接 使用=初始化 \n");
 
 
+	// "自定义构造函数+成员初始化列表" 的方式解决了上述类是非聚合类型使用列表初始化的限制
+
+
+	struct NonAggregate  // 非聚类体类型
+	{
+		int x;
+		int y = 5;				// 非static成员 使用=直接初始化 
+		virtual void func() {}  // 虚函数
+	private:
+		int z;					// private/protected的成员
+	public:
+		NonAggregate(int i, int j, int k) :x(i), y(j), z(k)  // 自定义构造函数
+		{ 
+			cout << "NonAggregate Construct " << endl; 
+		}
+	};
+	NonAggregate non_a{ 123,456,789 };
+	cout << "非聚类体 自定义构造函数+成员初始化列表 : " << non_a.x << " " << non_a.y << endl;
+
+
+	cout << endl;
     return 0;
 }
 
