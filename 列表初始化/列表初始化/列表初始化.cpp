@@ -44,10 +44,10 @@ public:
 	但是对于用于固定的数据成员的类来说这种改写意义不大
 	除非 如果我们自定义的类也是一个容器类
 	*/
-#if 0 
+#if 0
 	Foo(std::initializer_list<float> list){
 		cout << "initializer_list构造函数 " << endl;
-		auto it = list.begin(); // const int*
+		auto it = list.begin(); // const float*
 		if (it == list.end()) cout << "initializer_list构造函数 a end " << endl; 
 		a = *it++;
 		if (it == list.end()) cout << "initializer_list构造函数 b end " << endl;
@@ -57,6 +57,18 @@ public:
 
 	}
 #endif 
+
+	Foo& operator=(std::initializer_list<int> list) {
+		cout << " operator=(std::initializer_list<int> list) " << endl; 
+		auto it = list.begin(); // const int*
+		if (it == list.end()) cout << "initializer_list构造函数 a end " << endl;
+		a = *it++;
+		if (it == list.end()) cout << "initializer_list构造函数 b end " << endl;
+		b = *it++;
+		if (it == list.end()) cout << "initializer_list构造函数 c end " << endl;
+		c = *it++;
+		return *this;
+	}
 
 };
 
@@ -70,7 +82,7 @@ public:
 		自定义的容器类，和STL中的容器类，一样拥有“接受可变长”“相同数据类型”的数据的能力
 		注意数据类型必须相同
 	*/
-	FooVec(std::initializer_list<int> list) // 数据类型必须是int 
+	FooVec(std::initializer_list<double> list) // 数据类型必须是int 
 	{
 		cout << "initializer_list构造函数 " << endl;
 		for (auto it = list.begin(); it != list.end(); it++)
@@ -206,7 +218,7 @@ int main()
 	//Foo a3 = a2;	// ERROR Foo的拷贝构造函数声明为私有的 
 
 	Foo a3 = { 123 }; // 列表初始化  
-	Foo a4{ 123 };	  // 列表初始化  都是调用Foo(int)构造函数
+	Foo a4{ 123 };	  // 列表初始化  都是调用Foo(int)构造函数(如果有std::initilizer_list构造函数优先)
 
 	int a5 = { 3 };	  // C++98/03所不具备的，是C++11新增的写法
 	int a6 { 3 };
@@ -232,6 +244,14 @@ int main()
 	printf("[1] = %d %f %f\n", foo_list[1].a, foo_list[1].b, foo_list[1].c);
 	printf("[2] = %d %f %f\n", foo_list[2].a, foo_list[2].b, foo_list[2].c);
 	
+
+
+	// 赋值运算符 也可以重载 std::initializer_list版本 
+	cout << endl << "调用 std::initializer_list 赋值运算符 " << endl;
+	printf("之前 Foo %d %f %f  \n", a4.a, a4.b , a4.c );
+	a4 = { 11 , 12 , 13  }; // 会被强制转换成double  double->int正常
+	printf("之后 Foo %d %f %f  \n", a4.a, a4.b, a4.c);
+
 
 	/* 普通的POD类型 和 聚合体 aggregate 
 		C++中关于类是否是一个聚合体的定义
@@ -324,7 +344,8 @@ int main()
 	for (std::vector<Foo>::iterator itor = vec_foo.begin(); itor < vec_foo.end(); itor++) {
 		const Foo& thing = (*itor);
 		cout << "thing [" << thing.a << " " << thing.b << " " << thing.c << " ]" << endl;
-	}
+	} cout << endl << endl;
+
 
 	// 使用'列表初始化方法'是将'initializer-list'转换成对应的类类型
 	
