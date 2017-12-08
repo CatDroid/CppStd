@@ -82,6 +82,7 @@ DefClass getValue() {
 	return local; // 编译器在不优化的时候 返回值是复杂类型 返回局部变量时候  优选移动构造函数 
 }
 
+
 /*
 									VS2015							Clang++
 const DefClass& cc = getValue();	无参构造local+移动构造cc		无参构造local(返回值优化 常量左值引用 直接绑定 到 局部变量   )
@@ -143,7 +144,10 @@ int main()
 		cout << "sizeof(DefClass) = " << sizeof(DefClass) << endl;
 		uint64_t* before_new = new uint64_t(3); cout << "before_new " << before_new << endl;
 		uint64_t before = 4;					cout << "before     " << &before << endl;
-		const DefClass& cc = getValue();		cout << "cc	        " << &cc << endl; 
+		//const DefClass& cc = getValue();		cout << "cc	        " << &cc << endl; 
+		DefClass&& cc = getValue();		cout << "cc	        " << &cc << endl;
+		// clang++ 中 返回临时对象 给到 右值引用或常量左值引用 都一样(加-fno-elide-constructors情况下对应也一样)
+		//				右值引用或常量左值引用 都会发现 临时对象(-fno-elide-constructors) 或者 局部对象 都是分配在函数调用之前的栈内存
 		cc.dump();
 		uint64_t after = 5;						cout << "after      " << &after << endl;
 		uint64_t* after_new = new uint64_t(6);	cout << "after_new  " << after_new << endl;
