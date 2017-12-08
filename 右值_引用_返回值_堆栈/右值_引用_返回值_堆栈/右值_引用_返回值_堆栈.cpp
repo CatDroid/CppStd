@@ -83,6 +83,25 @@ DefClass getValue() {
 }
 
 
+DefClass getInnerValue() {
+	cout << "--getInnerValue entry " << endl;
+	uint64_t local_before = 4;  cout << "--getInnerValue local_before " << &local_before << endl;
+	DefClass local;
+	uint64_t local_after = 5;	cout << "--getInnerValue local_after  " << &local_after << endl;
+	cout << "--getInnerValue  exit " << endl;
+	return local; // 没有返回值优化的话 这里会调用 移动构造函数(这里局部对象 还是被优化了 作为右值处理了)
+}
+
+DefClass getOutterValue() {
+	cout << "--getOutterValue entry " << endl;
+	uint64_t local_before = 4;  cout << "--getOutterValue local_before " << &local_before << endl;
+	DefClass&& right =  getInnerValue();
+	uint64_t local_after = 5;	cout << "--getOutterValue local_after  " << &local_after  << endl;
+	cout << "--getOutterValue  exit " << endl;
+	return right; // 这个 ‘右值引用’ 现在是个左值  调用的是 拷贝构造函数 !!!
+}
+
+
 /*
 									VS2015							Clang++
 const DefClass& cc = getValue();	无参构造local+移动构造cc		无参构造local(返回值优化 常量左值引用 直接绑定 到 局部变量   )
@@ -139,7 +158,7 @@ int main()
 	}
 #endif
 
-#if 1 
+#if 0 
 	{
 		cout << "sizeof(DefClass) = " << sizeof(DefClass) << endl;
 		uint64_t* before_new = new uint64_t(3); cout << "before_new " << before_new << endl;
@@ -155,6 +174,10 @@ int main()
 		cout << "   " << endl;
 	}cout << " } " << endl;
 #endif 
+
+	uint64_t before = 4;	cout << "before     " << &before << endl;
+	DefClass&& result = getOutterValue(); cout << "result   " << &result << endl;
+	uint64_t after = 5;		cout << "after      " << &after << endl;
 
 	return 0;
 }
