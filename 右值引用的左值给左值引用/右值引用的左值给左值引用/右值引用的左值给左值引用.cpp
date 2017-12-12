@@ -152,6 +152,7 @@ int main()
 	}cout << "-----**-----" << endl;
 
 
+	
 	/*{ // 函数返回左值引用  不能给到 右值引用变量
 		DefClass&& returnRight = inRightRef_outLeftRef(  DefClass() );
 		// ERROR 类型DefClass的右值引用 不能绑定到 类型DefClass的左值
@@ -171,6 +172,26 @@ int main()
 		cout << def.temp[0] << endl;
 	}cout << "-----****-----" << endl;
 
+	{
+		DefClass c;
+		DefClass& c1 = c;
+		//DefClass&& c2 = c1;
+		DefClass&& c2 = std::move(c1); // std::move是函数 返回 右值引用的右值(将亡值) (右值引用可绑定)
+	}
+
+	/*
+	
+	总结：
+		
+		右值引用	可绑定的: 
+							字面值   
+							临时对象    
+							将亡值(右值引用的右值)  
+					不包含:
+							右值引用的左值(具名的右值引用)
+							左值引用(特别是,函数返回的),除非使用std::move
+	
+	*/
 
 	cout << "------$$$$$------" << endl;
     return 0;
