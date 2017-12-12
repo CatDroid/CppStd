@@ -104,15 +104,17 @@ int main()
 
 	}
 
+	{
+		DefClass&& r1 = DefClass();
+		//DefClass&& r2 = r1;	// 无法将右值引用绑定到左值
+		DefClass& lr = r1;		// 具名的右值引用也是左值 所有变量都是左值 可以给到左值引用,如果本类是引用的话,左值引用就引用了对应的对象
+
+		DefClass l;
+		DefClass& l1 = l;
+		DefClass& l2 = l1;  // OK  一切变量都是有名字的,所以都是左值
+	}
 
 
-	DefClass&& r1 = DefClass();
-	//DefClass&& r2 = r1;	// 无法将右值引用绑定到左值
-	DefClass& lr = r1;		// 具名的右值引用也是左值 所有变量都是左值 可以给到左值引用,如果本类是引用的话,左值引用就引用了对应的对象
-
-	DefClass l;
-	DefClass& l1 = l;
-	DefClass& l2 = l1;  // OK  一切变量都是有名字的,所以都是左值
 
 
 
