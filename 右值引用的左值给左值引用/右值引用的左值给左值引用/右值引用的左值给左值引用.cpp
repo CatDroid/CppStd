@@ -89,23 +89,30 @@ VS2015 (x86) 连续定义的int变量，地址相差12个字节。这是为什么？
 */
 int main()
 {
-	// clang++ 	/ vs2015+Release Mode
-	cout << "sizeof(char &)=" << sizeof(char &) << endl; // sizeof(char &)=1
-	cout << "sizeof(int  &)=" << sizeof(int  &) << endl; //	sizeof(int  &) = 4
-	cout << "sizeof(long long &)=" << sizeof(long long &) << endl; // sizeof(long long &) = 8
-	cout << "sizeof(long long)=" << sizeof(long long) << endl;
-	long long size = 1;			cout << &size << endl;		// 0xffffcbf0
-	long long& size_ref = size; cout << &size_ref << endl;	// 0xffffcbf0
-	long long size_2 = 2;		cout << &size_2 << endl;	// 0xffffcbe0
-	
+	{	// 1. sizeof 引用类型 等于 类型 本来的大小 
+																		//	clang++  /	vs2015+Release Mode+x86
+		cout << "sizeof(char &)=" << sizeof(char &) << endl;			//	sizeof(char &)=1
+		cout << "sizeof(int  &)=" << sizeof(int  &) << endl;			//	sizeof(int  &) = 4
+		cout << "sizeof(long long &)=" << sizeof(long long &) << endl;	//	sizeof(long long &) = 8
+		cout << "sizeof(long long)=" << sizeof(long long) << endl;
+	}
+
+	{	// 2. 左值引用和右值引用本来也占内存，所以具名的引用类型变量可以取地址,是左值
+		long long size = 1;			cout << &size << endl;		// 0xffffcbf0
+		long long& size_ref = size; cout << &size_ref << endl;	// 0xffffcbf0
+		long long size_2 = 2;		cout << &size_2 << endl;	// 0xffffcbe0
+
+	}
 
 
-	//DefClass&& r1 = DefClass();
-	//DefClass&& r2 = r1; // 无法将右值引用绑定到左值
 
-	DefClass r;
-	DefClass& r1 = r;
-	DefClass& r2 = r1;  // OK 
+	DefClass&& r1 = DefClass();
+	//DefClass&& r2 = r1;	// 无法将右值引用绑定到左值
+	DefClass& lr = r1;		// 具名的右值引用也是左值 所有变量都是左值 可以给到左值引用,如果本类是引用的话,左值引用就引用了对应的对象
+
+	DefClass l;
+	DefClass& l1 = l;
+	DefClass& l2 = l1;  // OK  一切变量都是有名字的,所以都是左值
 
 
 
