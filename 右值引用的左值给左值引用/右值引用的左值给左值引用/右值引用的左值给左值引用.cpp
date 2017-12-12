@@ -48,21 +48,36 @@ public:
 };
 
 
-void dumpByleft(DefClass & left) {
+
+DefClass& inRightRef_outLeftRef(DefClass && right ) {
+	right.temp[0] = 1111;	// 修改右值引用
+	return right;			// 具名的右值引用是 左值 可以给到 左值引用 !!!! 
+	
+}
+
+DefClass& inLeftRef_outLeftRef(DefClass& left) {
+	left.temp[0] = 2222;		// 形参是左值引用 实参是具名的左值引用变量
+	return left;				//	类似'自增运算符'
+}								//	返回函数参数中的(左值)引用
+ 
+
+DefClass inLeftRef_outValue (DefClass & left) {
+	return left;				//	拷贝构造函数  @VS2015/Clang++  临时对象 右值
+}
+
+//////////////////////////////////////////////////////////////
+
+void callme(DefClass&& right) {
+	right.dump();
+	cout << "callme(DefClass&& !" << endl;
+}
+
+void callme(DefClass& left) {
 	left.dump();
+	cout << "callme(DefClass& !" << endl;
 }
 
-
-DefClass& returnLeftRef(DefClass& left) {
-	return left; // 类似'自增运算符'
-}
-// 如果左值引用是一个临时变量（例如函数的返回值），那么它就是右值
-// 
-
-DefClass dumpReturn (DefClass & left) {
-	return left; //  拷贝构造函数  @VS2015/Clang++
-}
-
+/////////////////////////////////////////////////////////////
 
 DefClass get_a_DefClass() {
 	DefClass a;
@@ -71,8 +86,9 @@ DefClass get_a_DefClass() {
 }
 
 DefClass& foo(DefClass&& x) {
+	cout << "foo" << endl;
 	x.temp[0] = x.temp[0] + 1 ;
-	return x; // 具名的右值引用是 左值 可以给到 左值引用 !!!!
+	return x;
 }
 
 /*
@@ -107,7 +123,7 @@ int main()
 	{
 		DefClass&& r1 = DefClass();
 		//DefClass&& r2 = r1;	// 无法将右值引用绑定到左值
-		DefClass& lr = r1;		// 具名的右值引用也是左值 所有变量都是左值 可以给到左值引用,如果本类是引用的话,左值引用就引用了对应的对象
+		DefClass& lr = r1;		// 具名的右值引用也是左值 所有变量都是左值 可以给到左值引用,如果变量本来是引用类型的话,左值引用就引用了对应的对象
 
 		DefClass l;
 		DefClass& l1 = l;
@@ -115,34 +131,48 @@ int main()
 	}
 
 
+	{	// 右值引用 是一种类型  如果变量是左值(有名字 可去地址) 那么可以给到左值引用变量初始化
+		// 如果函数形参是右值引用类型，那么实参要是‘右值’来初始化参数
+
+		cout << "-----*------" << endl;
+		DefClass&& right = DefClass();
+		DefClass& left = inRightRef_outLeftRef(std::move(right));
+		left.dump();
+		cout << left.temp[0] << endl;
+	}cout << "-----*-----" << endl;
+
+	{   // 函数返回左值引用 并给到左值引用变量 
+		// 返回(左值)引用: 1.实参中的引用 2.对象本身 3.对象内部属性 
+		//		不能返回:  1. 局部变量 
+		cout << "-----**------" << endl;
+		DefClass&& right = DefClass();
+		DefClass& left = inLeftRef_outLeftRef(right);
+		left.dump();
+		cout << left.temp[0] << endl;
+	}cout << "-----**-----" << endl;
 
 
-
-	DefClass&& right = DefClass();
-	dumpByleft(right); // 右值引用 是一种类型  如果变量是左值(有名字 可去地址) 那么可以给到左值引用变量初始化
-					   // 如果函数参数是右值引用类型，那么实参要是‘右值’来初始化参数 
-
-//	{
-//		DefClass&& returnRight = dumpReturnRight(right);  // ERROR 类型DefClass的右值引用 不能绑定到 类型DefClass的左值
-//	}
-
-	//DefClass* addr = &returnLeftRef(right);
-	//cout << "DefClass* " << addr << endl;
+	/*{ // 函数返回左值引用  不能给到 右值引用变量
+		DefClass&& returnRight = inRightRef_outLeftRef(  DefClass() );
+		// ERROR 类型DefClass的右值引用 不能绑定到 类型DefClass的左值
+	} */
 
 
+	{
+		cout << "-----***-----" << endl;
+		callme(inRightRef_outLeftRef(DefClass())); // 返回的左值引用，没有区分左值还是右值，调用 左值引用参数 函数
+	}cout << "-----***-----" << endl;			   // 返回的右值引用，是将亡值，右值引用的右值 
 
 
+	{
+		cout << "-----****------" << endl;
+		DefClass& def = foo(get_a_DefClass());
+		def.dump();
+		cout << def.temp[0] << endl;
+	}cout << "-----****-----" << endl;
 
-	DefClass& addr =  returnLeftRef(right);
 
-	//dumpByleft(dumpReturnRight(right));
-	
-	//{
-	//	DefClass&& ret = dumpReturn(right);
-	//	ret.dump();
-	//}
-
-	cout << "-------------" << endl;
+	cout << "------$$$$$------" << endl;
     return 0;
 }
 
