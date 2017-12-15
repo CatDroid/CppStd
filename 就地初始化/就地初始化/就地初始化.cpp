@@ -4,29 +4,55 @@
 #include "stdafx.h"
 
 #include <iostream>
+#include <string>
 
 using namespace std;
 
 class Mem {
 
 public:
+ 
 	Mem(int a, int b) :ma(a), mb(b) {
-		std::cout << "[" << this << "] ma = " << ma << "; mb = " << mb << std::endl;
+		std::cout << "[" << this << "] Mem(int a, int b) = " << ma << "; mb = " << mb << std::endl;
 	}
 
 	// clang++ 就地初始化.cpp  -o main --std=c++98  编译错误
 	// clang++ 就地初始化.cpp  -o main --std=c++11  编译通过  noexcept C++ 新增 
-	~Mem() noexcept(true) {
+	virtual ~Mem() noexcept(true) {
 		std::cout << "[" << this << "] ~Mem " << std::endl;
 	}
 
 	void dump() {
-		std::cout << "[" << this << "] ma = " << ma << "; mb = " << mb << std::endl;
+		std::cout << "[" << this << "] dump  ma = " << ma << "; mb = " << mb << std::endl;
 	}
 
 private:
 	int ma;
 	int mb;
+};
+
+class Group {
+public:
+	Group() {
+		cout << "[" << this << "] Group() " << endl;
+	}
+
+	Group(int a):m(a,13) {
+		cout << "[" << this << "] Group(int a) a = " << a << endl;
+	}
+
+	~Group( ){
+		cout << "[" << this << "] ~Group( ) "<< endl;
+	}
+
+	void dump() {
+		m.dump();
+	}
+private:
+	//Mem m(1, 2);
+	//string s("12345");  // 非静态成员 就地初始化 只能使用 = 或者 集合初始化 不能使用()
+	Mem m = { 1,2 };
+	//string s{ "123344" };
 };
 
 class MemE {
@@ -41,12 +67,32 @@ public:
 
 int main()
 {
-	try {
-		MemE e;
-	}
-	catch (int ex) {
-		cout << "Exception !  ex = " << ex << endl;
-	}
+	{ // 使用 try 和 catch 捕捉异常
+		try {
+			MemE e;
+		}
+		catch (int ex) {
+			cout << "Exception !  ex = " << ex << endl;
+		}
+		catch (...) {
+			cout << "what Exception ? " << endl;
+		}
+	}cout << "------------------------------" << endl;
+
+
+	{
+		Group g1;
+		g1.dump();
+	}cout << "------------------------------" << endl;
+
+
+	{
+		Group g(999);
+		g.dump();
+	}cout << "------------------------------" << endl;
+
+
+
     return 0;
 }
 
