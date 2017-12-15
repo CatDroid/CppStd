@@ -51,12 +51,13 @@ public:
 	void dump() {
 		m.dump();
 	}
-private:
+public:
 	//Mem m(1, 2);
 	//string s("12345");  // 非静态成员 就地初始化 只能使用 = 或者 集合初始化 不能使用()
 	Mem m = { 1,2 };
 	//string s{ "123344" };
 
+public:
 	// static int STATIC_NUM = 2; // C++11和98对非常量静态成员变量 都必须在头文件声明 在源文件定义/初始化 保证变量定义最后只在一个目标文件出现
 	static int STATIC_NUM;
 	constexpr static int C_STATIC_NUM = 4; // OK  cosnt/constexpr
@@ -102,7 +103,16 @@ int main()
 		g.dump();
 	}cout << "------------------------------" << endl;
 
-
+	{ // 非静态成员 sizeof 
+		// C++98 只有静态成员/对象实例的成员 可以sizeof 
+		Group g;
+		cout << sizeof(g.m) << endl;			// 16	 C++98 / 11 OK
+		cout << sizeof(Group::C_STATIC_NUM) << endl; // 4  C++98/11 OK 
+		cout << sizeof(Group::m) << endl; // 16  C++98 Error / 11  vs2015 OK    clang++ p ERROR(若m是private)
+		cout << sizeof(((Group*)0)->m) << endl;  // C++98 替代方案
+	
+	}
+ 
 
     return 0;
 }
