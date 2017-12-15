@@ -37,7 +37,9 @@ public:
 		cout << "[" << this << "] Group() " << endl;
 	}
 
-	Group(int a):m(a,13) {
+	Group(int a):m(a,13) { 
+		// 这种情况 只会调用初始化列表的构造,不会调用 就地初始化
+		// 就地初始化 对于 多构造函数 多初始化成员 的情景 有好处
 		cout << "[" << this << "] Group(int a) a = " << a << endl;
 	}
 
