@@ -59,6 +59,7 @@ private:
 
 	// static int STATIC_NUM = 2; // C++11和98对非常量静态成员变量 都必须在头文件声明 在源文件定义/初始化 保证变量定义最后只在一个目标文件出现
 	static int STATIC_NUM;
+	constexpr static int C_STATIC_NUM = 4; // OK  cosnt/constexpr
 };
 
 int Group::STATIC_NUM = 2;
