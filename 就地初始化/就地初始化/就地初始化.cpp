@@ -40,6 +40,7 @@ public:
 	Group(int a):m(a,13) { 
 		// 这种情况 只会调用初始化列表的构造,不会调用 就地初始化
 		// 就地初始化 对于 多构造函数 多初始化成员 的情景 有好处
+		// C++98 只能调用公共初始化函数 来 实现 共同部分的成员初始化 C++11改进效率和复杂程度
 		cout << "[" << this << "] Group(int a) a = " << a << endl;
 	}
 
@@ -55,7 +56,14 @@ private:
 	//string s("12345");  // 非静态成员 就地初始化 只能使用 = 或者 集合初始化 不能使用()
 	Mem m = { 1,2 };
 	//string s{ "123344" };
+
+	// static int STATIC_NUM = 2; // C++11和98对非常量静态成员变量 都必须在头文件声明 在源文件定义/初始化 保证变量定义最后只在一个目标文件出现
+	static int STATIC_NUM;
 };
+
+int Group::STATIC_NUM = 2;
+
+ 
 
 class MemE {
 public:
