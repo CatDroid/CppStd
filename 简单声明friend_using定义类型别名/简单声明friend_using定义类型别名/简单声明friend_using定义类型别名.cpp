@@ -1,11 +1,13 @@
-// ¼òµ¥ÉùÃ÷friend_using¶¨ÒåÀàĞÍ±ğÃû.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌĞòµÄÈë¿Úµã¡£
+ï»¿// ç®€å•å£°æ˜friend_usingå®šä¹‰ç±»å‹åˆ«å.cpp : å®šä¹‰æ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
+#include "extern_template.h"
+#include <iostream>
 
 template <typename T> class DefenderT {
 public:
-	friend T;  // C++98 ²»ÄÜÃ»ÓĞclass  C++11Ö§³Ö¼òµ¥ÉùÃ÷friend 
+	friend T;  // C++98 ä¸èƒ½æ²¡æœ‰class  C++11æ”¯æŒç®€å•å£°æ˜friend 
 	void Defencde(int x , int y ){}
 	void Trckle(int x , int y ){}
 
@@ -31,11 +33,15 @@ private:
 
 
 /*
-	// ²»¼Ó template<>µÄ»°  ´íÎó ! ÏÔÊ½ÌØÀı»¯Ç°±ØĞëÓĞ¡®template <>¡¯
+	// ä¸åŠ  template<>çš„è¯  é”™è¯¯ ! æ˜¾å¼ç‰¹ä¾‹åŒ–å‰å¿…é¡»æœ‰â€˜template <>â€™
 	template<>
 	class DefenderT<int> {
 	};
 */
+
+extern template void extern_template_func<int>(int); // å¤–éƒ¨æ¨¡æ¿å£°æ˜
+extern template void extern_template_func<double>(double); // æ˜¾å¼å®ä¾‹åŒ– å¿…é¡»åœ¨è¿™ä¸ªå£°æ˜ ä¹‹å æˆ–è€…å…¶ä»–ç¼–è¯‘å•å…ƒ
+extern void call(int arg);
 
 #define  TEST_UNIT  1 
 
@@ -54,8 +60,8 @@ public:
 
 #else
 
-using Attacker = AttackerT<int>;		// Ê¹ÓÃusing¶¨ÒåÀàĞÍ±ğÃû 
-typedef  DefenderT<int>  Defender;		// friend int ²»»á²úÉúÓÑÔª
+using Attacker = AttackerT<int>;		// ä½¿ç”¨usingå®šä¹‰ç±»å‹åˆ«å 
+typedef  DefenderT<int>  Defender;		// friend int ä¸ä¼šäº§ç”Ÿå‹å…ƒ
 
 #endif 
 
@@ -82,6 +88,12 @@ int main()
 #endif
 
 
+	extern_template_func<int>(5);
+	call(6);
+	extern_template_func(6.1); // double 
+
+	// 
+	which_kind<double>::type(); // OK ä¸ç”¨åœ¨ å¤´æ–‡ä»¶å£°æ˜ å…¨ç‰¹åŒ–çš„æ¨¡æ¿ç±»
 
     return 0;
 }
