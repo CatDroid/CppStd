@@ -90,11 +90,33 @@ int main()
 
 	extern_template_func<int>(5);
 	call(6);
-	extern_template_func(6.1); // double 
+	//extern_template_func<double>(6.1); 
+	extern_template_func(6.1);			
 
 	// 
 	which_kind<double>::type(); // OK 不用在 头文件声明 全特化的模板类
+	/*
+		这个跟编译顺序有关
+	
+		clang++  简单声明friend_using定义类型别名.cpp  extern_template.cpp  -o main --std=c++11
+		5
+		int
+		6
+		int
+		6.1
+		type unknown
+		type unknown
 
+		clang++ extern_template.cpp 简单声明friend_using定义类型别名.cpp  -o main --std=c++11
+		5
+		int
+		6
+		int
+		6.1
+		double
+		double
+
+	*/
     return 0;
 }
 

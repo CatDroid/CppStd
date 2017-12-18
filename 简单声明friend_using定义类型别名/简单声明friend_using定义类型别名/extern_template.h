@@ -1,13 +1,13 @@
-#pragma once
+ï»¿#pragma once
 
-
-// º¯ÊıÄ£°å ÉùÃ÷ 
+#include <iostream>
+// å‡½æ•°æ¨¡æ¿ å£°æ˜ 
 template<typename T>
 void extern_template_func(T a);
 
-// ÀàÄ£°å¶¨Òå
+// ç±»æ¨¡æ¿å®šä¹‰
 template<typename T>
 struct which_kind {
-	static void type(){}
+	static void type() { std::cout << "type unknown" << std::endl; }
 };
 
