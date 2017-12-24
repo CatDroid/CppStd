@@ -195,8 +195,9 @@ int main()
 	b = equal(v1.begin(), v1.end(), v3.begin());
 	cout << "v1 and v3 are equal: " << b << endl; // true, surprisingly
 
-	b = equal(v1.begin(), v1.end(), v3.begin(), v3.end());
-	cout << "v1 and v3 are equal with dual-range overload: " << b << endl;// false
+	// clang++ 中还没有定义这个
+	//b = equal(v1.begin(), v1.end(), v3.begin(), v3.end());
+	//cout << "v1 and v3 are equal with dual-range overload: " << b << endl;// false
 
 	//b = equal(v1.begin(), v1.end(), v4.begin()  );  // crash !!
 	//cout << "v1 and v4 are equal with dual-range overload: " << b << endl; 
@@ -409,6 +410,11 @@ int main()
 
 	int i11 = 2.1;
 	//int i11_init{ 2.1 }; // ERROR  double转换到int 需要收缩转换
+
+	// 使用Clang++  会默认带上选项 [-Wc++11-narrowing]  可以通过 -Wno-narrowing 改成只是警告
+	// 所以下面的会错误:
+	// error: type 'double' cannot be narrowed to 'int' in  initializer list
+	int float2int[] = { 1.1,1.0,2.2,2.3,2.4 };
 
 	const int x = 1024, y = 127 ;
 	char c = x;  //OK   会被截断 
