@@ -33,6 +33,10 @@ public:
 	void overload_func(Partner& p) {
 		cout << "Base::overload_func(Partner temp) temp = " << p << endl;
 	}
+ 
+	virtual void virtual_func(Partner& p) { // 虚函数直接继承了，在虚函数表中登记 无需要使用using声明 
+		cout << "Base::virtual_func(Partner temp) temp = " << p << endl;
+	}
 
 private:
 	int mInt{0};
@@ -49,8 +53,9 @@ public:
 		cout << "Derive::overload_func(double temp) " << temp << endl;
 	}
 
+
 private:
-	double mDD{ 0 };
+	double mDD{ 0 };			// 使用 using继承构造函数 和  成员变量初始化 两个C++特性
 };
 
 int main()
@@ -63,7 +68,7 @@ int main()
 	d.overload_func(12);
 	d.Base::overload_func(p);	// 不用 using Base::overload_func;
 	d.overload_func(p);			// 必须 using Base::overload_func; 继承非虚成员函数
-
+	d.virtual_func(p);			// 虚函数直接从基类获得 不需要using声明
     return 0;
 }
 
