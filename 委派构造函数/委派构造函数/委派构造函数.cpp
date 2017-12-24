@@ -48,12 +48,12 @@ public:
 		initSetup();
 	}
 
-	Info(int temp) :id(temp),Base(temp+1) {
+	Info(int temp) :id(temp),Base(id+1) {
 		//this->Info(); 编译器不允许构造函数中 调用构造函数
 		cout << "Info(int temp) temp = " << temp << endl;
 	}
 
-	Info(const char* temp) :name(temp),Base(id + 1) {
+	Info(const char* temp) :name(temp),Base(id + 1) { // 初始化列表 基类和普通数据成员初始化 书写没有顺序 但是一定先调用基类构造
 		cout << "Info(const char* temp) temp = " << temp << endl;
 
 		// new (this) Info(); 
@@ -85,7 +85,7 @@ private:
 
 int main()
 {
-	Info test("test");
+	Info test(12);
 	test.dump();
 
     return 0;
