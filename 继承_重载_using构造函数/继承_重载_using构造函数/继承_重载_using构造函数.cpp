@@ -96,6 +96,39 @@ public:
 	// 也就是: C(double):B(double),A() 
 };
 
+class DefaultA {
+public:
+	DefaultA(int a = 3, double e = 2.4) {
+		cout << "DefaultA [" << this << "] a = " << a << " e = " << e  << endl;
+	}
+	/*
+		默认参数构造函数 会产生多个不同的构造函数:
+		1. (int a = 3 , double e = 2.4 )
+		2. (int a = 3 )
+		3. ()
+		4. (const Base&)
+		这样using继承构造函数 也会产生这些，特别是无参默认构造函数
+	*/
+	~DefaultA() {
+		cout << "~DefaultA()" << this  << endl;
+	}
+};
+
+class DefaultB : public DefaultA {
+private: // 不影响 using继承构造函数
+	using DefaultA::DefaultA;
+};
+
+
+class Temp 
+{
+public:
+	Temp(int t) {
+
+	}// 自定义了构造函数 编译器不会产生默认构造函数 但是还是会产生拷贝构造函数(没有移动构造函数 实参是右值情况下调用拷贝构造函数)
+};
+
+
 int main()
 {
 	{
@@ -112,8 +145,17 @@ int main()
 
 	{
 		C temp(1.24);
-	}
+	} cout << "---------" << endl;
 
+	{
+		DefaultB temp(12) ;
+		DefaultB temp2(temp);
+		DefaultB temp3;
+	}
+	{
+		Temp t(123);
+		Temp t1(t);
+	}
     return 0;
 }
 
