@@ -64,7 +64,7 @@ public:
 	{ 
 		cout << "Info(const char* temp) temp = " << temp << endl;
 	}
-	catch (string ex) {
+	catch (const string& ex) {
 		// 构造函数中抛出异常将导致对象的(本类)析构函数不被执行
 		// 当对象发生'部分构造'时，已经构造完毕的子对象将会逆序地被析构(包括基类)
 		// 构造函数中可以抛出异常，但必须保证在构造函数抛出异常之前，把系统资源释放掉，防止内存泄露
@@ -78,8 +78,21 @@ public:
 		cout << "string&& temp " << temp << endl;
 	}
 	
+	Info(float test) :Base(0) {
+		throw string("本类构造抛出异常");// 本类构造函数不会调用 基类的会调用 反顺序执行
+	}
+
+	Info(double test) :Info("double",0) {
+		throw string("委托构造函数异常");// 委托构造函数异常 还会调用本类的析构函数 因为目标构造函数已经完成，很多成员估计都初始化完毕了
+		// 后面的代码不会跑
+	}
+
 	void dump() {
 		cout << "id = " << id << " name = " << name << endl;
+	}
+
+	~Info() {
+		cout << "~Info() " << endl;
 	}
 
 private:
@@ -87,6 +100,7 @@ private:
 		cout << "Info(const char* arg1, int arg2)" << endl;
 		//initSetup();
 		if (arg1[0] == 'X' ) {
+			cout << "部分构造 抛出异常 " << endl;
 			throw string("die");
 		}
 	}
@@ -126,11 +140,35 @@ int main()
 
 
 	{
-		Info test("X");
-		
-		cout << "---/////-----" << endl;
-		//test.dump();
+		try{
+			Info test("X");
+			cout << "---/////-----" << endl;
+			test.dump();
+		}
+		catch (string ex) { // 委派构造函数 可以捕获 目标构造函数 的异常 不再进行本身的构造 但是实例化对象的外部还会收到/可捕获异常
+			cout << "Exception ? " << ex << endl;
+		}
+	 
 	}cout << "----------------------" << endl;
+
+
+	{
+		try {
+			Info ff(1.2f);
+		}
+		catch (string ex) {
+			cout << "Exception " << ex << endl;
+		}cout << "--------------------" << endl;
+	}
+
+	{
+		try {
+			Info ff(1.2);
+		}
+		catch (string ex) {
+			cout << "Exception " << ex << endl;
+		}cout << "--------------------" << endl;
+	}
 
 	cout << "end of main" << endl;
 
