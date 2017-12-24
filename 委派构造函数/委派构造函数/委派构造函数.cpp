@@ -1,15 +1,15 @@
-// ί�ɹ��캯��.cpp : �������̨Ӧ�ó������ڵ㡣
+﻿// 委派构造函数.cpp : 定义控制台应用程序的入口点。
 //
 
 #include "stdafx.h"
 
 /*
-	��Java�� ���֧��ί�ɹ��캯��  ����ڼ̳й��캯�� ί�ɹ��캯������ƺ�ʵ�ֶ��Ƚ���
+	在Java中 早就支持委派构造函数  相对于继承构造函数 委派构造函数的设计和实现都比较早
 
-	C++11����:
-	1. ��Աֱ�ӳ�ʼ��(�͵س�ʼ��)
-	2. ί�ɹ��캯��
-	3. �̳й��캯��
+	C++11特性:
+	1. 成员直接初始化(就地初始化)
+	2. 委派构造函数
+	3. 继承构造函数
 
 */
 #include <iostream>
@@ -49,15 +49,15 @@ public:
 	}
 
 	Info(int temp) :id(temp),Base(temp+1) {
-		//this->Info(); ���������������캯���� ���ù��캯��
+		//this->Info(); 编译器不允许构造函数中 调用构造函数
 		cout << "Info(int temp) temp = " << temp << endl;
 	}
 
 	Info(const char* temp) :name(temp),Base(id + 1) {
 		cout << "Info(const char* temp) temp = " << temp << endl;
 
-		new (this) Info(); 
-		// name = temp;		// �����ڳ�ʼ���б�λ�� �������
+		// new (this) Info(); 
+		// name = temp;		// 不能在初始化列表位置 否则错误
 		
 	}
 
@@ -70,11 +70,11 @@ public:
 	}
 
 private:
-	int id{ -1 };			// ��ʹ�Ǿ͵س�ʼ�� ����Ҳ���ڻ��๹��֮��ų�ʼ�� 
+	int id{ -1 };			// 即使是就地初始化 但是也是在基类构造之后才初始化 
 	string name{ "default" };
 	/*
-		1.ʹ�þ͵س�ʼ���ķ�ʽ  ��ÿ�����캯�������ݳ�Ա�ĳ�ʼ��
-		2.ʹ��placement newǿ���ڱ������ַ���ù��캯��(1.���캯������������  2.ʹ�ó�ʼ���б������)
+		1.使用就地初始化的方式  简化每个构造函数对数据成员的初始化
+		2.使用placement new方法 强制在本对象地址调用构造函数(1.构造函数调用了两次  2.使用初始化列表会错误)
 	*/
 
 	void initSetup() {
