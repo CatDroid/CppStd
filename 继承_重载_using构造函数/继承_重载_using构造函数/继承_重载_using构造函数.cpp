@@ -97,6 +97,8 @@ public:
 };
 
 class DefaultA {
+private:
+	DefaultA(char temp) {}
 public:
 	DefaultA(int a = 3, double e = 2.4) {
 		cout << "DefaultA [" << this << "] a = " << a << " e = " << e  << endl;
@@ -115,8 +117,16 @@ public:
 };
 
 class DefaultB : public DefaultA {
-private: // 不影响 using继承构造函数
+private: 
 	using DefaultA::DefaultA;
+	/*
+		1. 派生类中 把using继承构造函数放在 private 中还是public的 ，相当于继承时候 把public一块继承了
+		2. 如果基类构造函数是私有成员函数 继承后也是私有的
+		3  虚继承  不能够声明继承构造函数
+		4. 如果使用了using继承 派生类不会隐式生成无参构造函数
+		
+	
+	*/
 };
 
 
@@ -151,6 +161,7 @@ int main()
 		DefaultB temp(12) ;
 		DefaultB temp2(temp);
 		DefaultB temp3;
+		//DefaultB temp4('c');// 已隐式声明 不可访问
 	}
 	{
 		Temp t(123);
