@@ -1,4 +1,4 @@
-// ÓÒÖµÒýÓÃµÄ×óÖµ¸ø×óÖµÒýÓÃ.cpp : ¶¨Òå¿ØÖÆÌ¨Ó¦ÓÃ³ÌÐòµÄÈë¿Úµã¡£
+ï»¿// å³å€¼å¼•ç”¨çš„å·¦å€¼ç»™å·¦å€¼å¼•ç”¨.cpp : å®šä¹‰æŽ§åˆ¶å°åº”ç”¨ç¨‹åºçš„å…¥å£ç‚¹ã€‚
 //
 
 #include "stdafx.h"
@@ -50,24 +50,24 @@ public:
 
 
 DefClass& inRightRef_outLeftRef(DefClass && right ) {
-	right.temp[0] = 1111;	// ÐÞ¸ÄÓÒÖµÒýÓÃ
-	return right;			// ¾ßÃûµÄÓÒÖµÒýÓÃÊÇ ×óÖµ ¿ÉÒÔ¸øµ½ ×óÖµÒýÓÃ !!!! 
+	right.temp[0] = 1111;	// ä¿®æ”¹å³å€¼å¼•ç”¨
+	return right;			// å…·åçš„å³å€¼å¼•ç”¨æ˜¯ å·¦å€¼ å¯ä»¥ç»™åˆ° å·¦å€¼å¼•ç”¨ !!!! 
 	
 }
 
 DefClass& inLeftRef_outLeftRef(DefClass& left) {
-	left.temp[0] = 2222;		// ÐÎ²ÎÊÇ×óÖµÒýÓÃ Êµ²ÎÊÇ¾ßÃûµÄ×óÖµÒýÓÃ±äÁ¿
-	return left;				//	ÀàËÆ'×ÔÔöÔËËã·û'
-}								//	·µ»Øº¯Êý²ÎÊýÖÐµÄ(×óÖµ)ÒýÓÃ
+	left.temp[0] = 2222;		// å½¢å‚æ˜¯å·¦å€¼å¼•ç”¨ å®žå‚æ˜¯å…·åçš„å·¦å€¼å¼•ç”¨å˜é‡
+	return left;				//	ç±»ä¼¼'è‡ªå¢žè¿ç®—ç¬¦'
+}								//	è¿”å›žå‡½æ•°å‚æ•°ä¸­çš„(å·¦å€¼)å¼•ç”¨
  
 
 DefClass inLeftRef_outValue (DefClass & left) {
-	return left;				//	¿½±´¹¹Ôìº¯Êý  @VS2015/Clang++  ÁÙÊ±¶ÔÏó ÓÒÖµ
+	return left;				//	æ‹·è´æž„é€ å‡½æ•°  @VS2015/Clang++  ä¸´æ—¶å¯¹è±¡ å³å€¼
 }
 
 DefClass returnTempValue() {
 	DefClass c;
-	return c;
+	return c; // return ä¼šè°ƒç”¨ç§»åŠ¨æž„é€ å‡½æ•° ç”Ÿæˆä¸´æ—¶å€¼(å³å€¼)
 }
 
 //////////////////////////////////////////////////////////////
@@ -97,20 +97,20 @@ DefClass& foo(DefClass&& x) {
 }
 
 /*
-VS2015 (x86) Á¬Ðø¶¨ÒåµÄint±äÁ¿£¬µØÖ·Ïà²î12¸ö×Ö½Ú¡£ÕâÊÇÎªÊ²Ã´£¿
+VS2015 (x86) è¿žç»­å®šä¹‰çš„intå˜é‡ï¼Œåœ°å€ç›¸å·®12ä¸ªå­—èŠ‚ã€‚è¿™æ˜¯ä¸ºä»€ä¹ˆï¼Ÿ
 
-°´ÕÕÎÒÃÇµÄÀí½â£¬intÕ¼ÓÃ4¸ö×Ö½Ú£¬Ó¦¸ÃÏà²î4¸ö×Ö½Ú¡£
+æŒ‰ç…§æˆ‘ä»¬çš„ç†è§£ï¼Œintå ç”¨4ä¸ªå­—èŠ‚ï¼Œåº”è¯¥ç›¸å·®4ä¸ªå­—èŠ‚ã€‚
 
-ÔÚVS2015ÔÚDebugÄ£Ê½ÏÂ£¬int±äÁ¿Õ¼ÓÃ12¸ö×Ö½Ú¡£¿ÉÒÔÕâÑùÈÏÎª£¬DebugÄ£Ê½ÏÂ£¬ÔÚint±äÁ¿µÄÇ°ºó¸÷Ôö¼ÓÁË4¸ö×Ö½Ú£¬ÓÃÓÚ´æ´¢µ÷ÊÔÐÅÏ¢£¬
-ÄÇÃ´aaµÄºóÃæ4¸ö×Ö½Ú£¬bbµÄÇ°Ãæ4¸ö×Ö½Ú£¬ÔÙ¼ÓÉÏaa±¾ÉíµÄ4¸ö×Ö½Ú£¬¸ÕºÃÏà²î12¸ö×Ö½Ú¡£
+åœ¨VS2015åœ¨Debugæ¨¡å¼ä¸‹ï¼Œintå˜é‡å ç”¨12ä¸ªå­—èŠ‚ã€‚å¯ä»¥è¿™æ ·è®¤ä¸ºï¼ŒDebugæ¨¡å¼ä¸‹ï¼Œåœ¨intå˜é‡çš„å‰åŽå„å¢žåŠ äº†4ä¸ªå­—èŠ‚ï¼Œç”¨äºŽå­˜å‚¨è°ƒè¯•ä¿¡æ¯ï¼Œ
+é‚£ä¹ˆaaçš„åŽé¢4ä¸ªå­—èŠ‚ï¼Œbbçš„å‰é¢4ä¸ªå­—èŠ‚ï¼Œå†åŠ ä¸Šaaæœ¬èº«çš„4ä¸ªå­—èŠ‚ï¼Œåˆšå¥½ç›¸å·®12ä¸ªå­—èŠ‚ã€‚
 
-µ±ÎÒÃÇ°ÑÄ£Ê½ÉèÎªRelease£¬¾Í»á·¢ÏÖÕ»ÉÏÁ¬Ðø¶¨ÒåµÄint±äÁ¿£¬µØÖ·Ïà²î4¸ö×Ö½Ú¡£
+å½“æˆ‘ä»¬æŠŠæ¨¡å¼è®¾ä¸ºReleaseï¼Œå°±ä¼šå‘çŽ°æ ˆä¸Šè¿žç»­å®šä¹‰çš„intå˜é‡ï¼Œåœ°å€ç›¸å·®4ä¸ªå­—èŠ‚ã€‚
 
-×¢Òâ£ºÕ»ÉÏµØÖ·´Ó¸ßÏòµÍÔö³¤¡£ 
+æ³¨æ„ï¼šæ ˆä¸Šåœ°å€ä»Žé«˜å‘ä½Žå¢žé•¿ã€‚ 
 */
 int main()
 {
-	{	// 1. sizeof ÒýÓÃÀàÐÍ µÈÓÚ ÀàÐÍ ±¾À´µÄ´óÐ¡ 
+	{	// 1. sizeof å¼•ç”¨ç±»åž‹ ç­‰äºŽ ç±»åž‹ æœ¬æ¥çš„å¤§å° 
 																		//	clang++  /	vs2015+Release Mode+x86
 		cout << "sizeof(char &)=" << sizeof(char &) << endl;			//	sizeof(char &)=1
 		cout << "sizeof(int  &)=" << sizeof(int  &) << endl;			//	sizeof(int  &) = 4
@@ -118,7 +118,7 @@ int main()
 		cout << "sizeof(long long)=" << sizeof(long long) << endl;
 	}
 
-	{	// 2. ×óÖµÒýÓÃºÍÓÒÖµÒýÓÃ±¾À´Ò²Õ¼ÄÚ´æ£¬ËùÒÔ¾ßÃûµÄÒýÓÃÀàÐÍ±äÁ¿¿ÉÒÔÈ¡µØÖ·,ÊÇ×óÖµ
+	{	// 2. å·¦å€¼å¼•ç”¨å’Œå³å€¼å¼•ç”¨æœ¬æ¥ä¹Ÿå å†…å­˜ï¼Œæ‰€ä»¥å…·åçš„å¼•ç”¨ç±»åž‹å˜é‡å¯ä»¥å–åœ°å€,æ˜¯å·¦å€¼
 		long long size = 1;			cout << &size << endl;		// 0xffffcbf0
 		long long& size_ref = size; cout << &size_ref << endl;	// 0xffffcbf0
 		long long size_2 = 2;		cout << &size_2 << endl;	// 0xffffcbe0
@@ -127,17 +127,17 @@ int main()
 
 	{
 		DefClass&& r1 = DefClass();
-		//DefClass&& r2 = r1;	// ÎÞ·¨½«ÓÒÖµÒýÓÃ°ó¶¨µ½×óÖµ
-		DefClass& lr = r1;		// ¾ßÃûµÄÓÒÖµÒýÓÃÒ²ÊÇ×óÖµ ËùÓÐ±äÁ¿¶¼ÊÇ×óÖµ ¿ÉÒÔ¸øµ½×óÖµÒýÓÃ,Èç¹û±äÁ¿±¾À´ÊÇÒýÓÃÀàÐÍµÄ»°,×óÖµÒýÓÃ¾ÍÒýÓÃÁË¶ÔÓ¦µÄ¶ÔÏó
+		//DefClass&& r2 = r1;	// æ— æ³•å°†å³å€¼å¼•ç”¨ç»‘å®šåˆ°å·¦å€¼
+		DefClass& lr = r1;		// å…·åçš„å³å€¼å¼•ç”¨ä¹Ÿæ˜¯å·¦å€¼ æ‰€æœ‰å˜é‡éƒ½æ˜¯å·¦å€¼ å¯ä»¥ç»™åˆ°å·¦å€¼å¼•ç”¨,å¦‚æžœå˜é‡æœ¬æ¥æ˜¯å¼•ç”¨ç±»åž‹çš„è¯,å·¦å€¼å¼•ç”¨å°±å¼•ç”¨äº†å¯¹åº”çš„å¯¹è±¡
 
 		DefClass l;
 		DefClass& l1 = l;
-		DefClass& l2 = l1;  // OK  Ò»ÇÐ±äÁ¿¶¼ÊÇÓÐÃû×ÖµÄ,ËùÒÔ¶¼ÊÇ×óÖµ
+		DefClass& l2 = l1;  // OK  ä¸€åˆ‡å˜é‡éƒ½æ˜¯æœ‰åå­—çš„,æ‰€ä»¥éƒ½æ˜¯å·¦å€¼
 	}
 
 
-	{	// ÓÒÖµÒýÓÃ ÊÇÒ»ÖÖÀàÐÍ  Èç¹û±äÁ¿ÊÇ×óÖµ(ÓÐÃû×Ö ¿ÉÈ¥µØÖ·) ÄÇÃ´¿ÉÒÔ¸øµ½×óÖµÒýÓÃ±äÁ¿³õÊ¼»¯
-		// Èç¹ûº¯ÊýÐÎ²ÎÊÇÓÒÖµÒýÓÃÀàÐÍ£¬ÄÇÃ´Êµ²ÎÒªÊÇ¡®ÓÒÖµ¡¯À´³õÊ¼»¯²ÎÊý
+	{	// å³å€¼å¼•ç”¨ æ˜¯ä¸€ç§ç±»åž‹  å¦‚æžœå˜é‡æ˜¯å·¦å€¼(æœ‰åå­— å¯åŽ»åœ°å€) é‚£ä¹ˆå¯ä»¥ç»™åˆ°å·¦å€¼å¼•ç”¨å˜é‡åˆå§‹åŒ–
+		// å¦‚æžœå‡½æ•°å½¢å‚æ˜¯å³å€¼å¼•ç”¨ç±»åž‹ï¼Œé‚£ä¹ˆå®žå‚è¦æ˜¯â€˜å³å€¼â€™æ¥åˆå§‹åŒ–å‚æ•°
 
 		cout << "-----*------" << endl;
 		DefClass&& right = DefClass();
@@ -146,9 +146,9 @@ int main()
 		cout << left.temp[0] << endl;
 	}cout << "-----*-----" << endl;
 
-	{   // º¯Êý·µ»Ø×óÖµÒýÓÃ ²¢¸øµ½×óÖµÒýÓÃ±äÁ¿ 
-		// ·µ»Ø(×óÖµ)ÒýÓÃ: 1.Êµ²ÎÖÐµÄÒýÓÃ 2.¶ÔÏó±¾Éí 3.¶ÔÏóÄÚ²¿ÊôÐÔ 
-		//		²»ÄÜ·µ»Ø:  1. ¾Ö²¿±äÁ¿ 
+	{   // å‡½æ•°è¿”å›žå·¦å€¼å¼•ç”¨ å¹¶ç»™åˆ°å·¦å€¼å¼•ç”¨å˜é‡ 
+		// è¿”å›ž(å·¦å€¼)å¼•ç”¨: 1.å®žå‚ä¸­çš„å¼•ç”¨ 2.å¯¹è±¡æœ¬èº« 3.å¯¹è±¡å†…éƒ¨å±žæ€§ 
+		//		ä¸èƒ½è¿”å›ž:  1. å±€éƒ¨å˜é‡ 
 		cout << "-----**------" << endl;
 		DefClass&& right = DefClass();
 		DefClass& left = inLeftRef_outLeftRef(right);
@@ -158,22 +158,22 @@ int main()
 
 
 	
-	/*{ // º¯Êý·µ»Ø×óÖµÒýÓÃ  ²»ÄÜ¸øµ½ ÓÒÖµÒýÓÃ±äÁ¿
+	/*{ // å‡½æ•°è¿”å›žå·¦å€¼å¼•ç”¨  ä¸èƒ½ç»™åˆ° å³å€¼å¼•ç”¨å˜é‡
 		DefClass&& returnRight = inRightRef_outLeftRef(  DefClass() );
-		// ERROR ÀàÐÍDefClassµÄÓÒÖµÒýÓÃ ²»ÄÜ°ó¶¨µ½ ÀàÐÍDefClassµÄ×óÖµ
+		// ERROR ç±»åž‹DefClassçš„å³å€¼å¼•ç”¨ ä¸èƒ½ç»‘å®šåˆ° ç±»åž‹DefClassçš„å·¦å€¼
 	} */
 
 
 	{
 		cout << "-----***-----" << endl;
-		callme(inRightRef_outLeftRef(DefClass())); // ·µ»ØµÄ×óÖµÒýÓÃ£¬Ã»ÓÐÇø·Ö×óÖµ»¹ÊÇÓÒÖµ£¬µ÷ÓÃ ×óÖµÒýÓÃ²ÎÊý º¯Êý
-	}cout << "-----***-----" << endl;			   // ·µ»ØµÄÓÒÖµÒýÓÃ£¬ÊÇ½«ÍöÖµ£¬ÓÒÖµÒýÓÃµÄÓÒÖµ 
+		callme(inRightRef_outLeftRef(DefClass())); // è¿”å›žçš„å·¦å€¼å¼•ç”¨ï¼Œæ²¡æœ‰åŒºåˆ†å·¦å€¼è¿˜æ˜¯å³å€¼ï¼Œè°ƒç”¨ å·¦å€¼å¼•ç”¨å‚æ•° å‡½æ•°
+	}cout << "-----***-----" << endl;			   // è¿”å›žçš„å³å€¼å¼•ç”¨ï¼Œæ˜¯å°†äº¡å€¼ï¼Œå³å€¼å¼•ç”¨çš„å³å€¼ 
 
 	{
-		cout << "-----*** std::move ¸øµ½ÓÒÖµÒýÓÃ±äÁ¿ -----" << endl;
+		cout << "-----*** std::move ç»™åˆ°å³å€¼å¼•ç”¨å˜é‡ -----" << endl;
 		DefClass c;
 		DefClass&& lvalue_of_right_ref = std::move(c);
-		callme(lvalue_of_right_ref);// Õâ¸öµ÷ÓÃµÄÊÇ×óÖµÒýÓÃµÄ°æ±¾  ÓÒÖµÒýÓÃ¸øµ½Ò»¸öÓÒÖµÒýÓÃ±äÁ¿¾ÍÊÇ×óÖµ
+		callme(lvalue_of_right_ref);// è¿™ä¸ªè°ƒç”¨çš„æ˜¯å·¦å€¼å¼•ç”¨çš„ç‰ˆæœ¬  å³å€¼å¼•ç”¨ç»™åˆ°ä¸€ä¸ªå³å€¼å¼•ç”¨å˜é‡å°±æ˜¯å·¦å€¼
 		callme(std::move(c));
 	}cout << "-----***-----" << endl;
 
@@ -185,7 +185,7 @@ int main()
 	}cout << "-----****-----" << endl;
 
 
-	{cout << "-----·µ»ØÁÙÊ±Öµ¸øµ½ÓÒÖµÒýÓÃ-----" << endl;
+	{cout << "-----è¿”å›žä¸´æ—¶å€¼ç»™åˆ°å³å€¼å¼•ç”¨-----" << endl;
 		DefClass&& rref = returnTempValue();
 		rref.dump();
 	}cout << "-----****-----" << endl;
@@ -195,21 +195,21 @@ int main()
 		DefClass c;
 		DefClass& c1 = c;
 		//DefClass&& c2 = c1;
-		DefClass&& c2 = std::move(c1); // std::moveÊÇº¯Êý ·µ»Ø ÓÒÖµÒýÓÃµÄÓÒÖµ(½«ÍöÖµ) (ÓÒÖµÒýÓÃ¿É°ó¶¨)
+		DefClass&& c2 = std::move(c1); // std::moveæ˜¯å‡½æ•° è¿”å›ž å³å€¼å¼•ç”¨çš„å³å€¼(å°†äº¡å€¼) (å³å€¼å¼•ç”¨å¯ç»‘å®š)
 	}
 
 
 	/*
 	
-	×Ü½á£º
+	æ€»ç»“ï¼š
 		
-		ÓÒÖµÒýÓÃ	¿É°ó¶¨µÄ: 
-							×ÖÃæÖµ   
-							ÁÙÊ±¶ÔÏó    
-							½«ÍöÖµ(ÓÒÖµÒýÓÃµÄÓÒÖµ)  
-					²»°üº¬:
-							ÓÒÖµÒýÓÃµÄ×óÖµ(¾ßÃûµÄÓÒÖµÒýÓÃ)
-							×óÖµÒýÓÃ(ÌØ±ðÊÇ,º¯Êý·µ»ØµÄ),³ý·ÇÊ¹ÓÃstd::move
+		å³å€¼å¼•ç”¨	å¯ç»‘å®šçš„: 
+							å­—é¢å€¼   
+							ä¸´æ—¶å¯¹è±¡    
+							å°†äº¡å€¼(å³å€¼å¼•ç”¨çš„å³å€¼)  
+					ä¸åŒ…å«:
+							å³å€¼å¼•ç”¨çš„å·¦å€¼(å…·åçš„å³å€¼å¼•ç”¨)
+							å·¦å€¼å¼•ç”¨(ç‰¹åˆ«æ˜¯,å‡½æ•°è¿”å›žçš„),é™¤éžä½¿ç”¨std::move
 	
 	*/
 
