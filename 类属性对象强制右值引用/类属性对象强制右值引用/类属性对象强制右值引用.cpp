@@ -68,8 +68,9 @@ public:
 		MLINE("Movable(const Movable& other)");
 	}
 
-	Movable(Movable&& other):i(other.i),h(std::move(other.h)) //** 如果类属性是对象 遇到本类的移动构造或者移动拷贝 一定要用std::move试到类属性对象也应用移动语义
-	{
+	Movable(Movable&& other) noexcept(true)  :i(other.i),h(std::move(other.h)) //** 如果类属性是对象 遇到本类的移动构造或者移动拷贝 一定要用std::move试到类属性对象也应用移动语义
+	{ // 如果移动构造产生 excpetion的话 直接terminal程序  
+	  // 或者使用std::move_if_noexcept 如果类的移动构造函数有noexcpt关键字修饰,返回右值应用 
 		other.i = nullptr;
 		MLINE("Movable(Movable&& other)     ");
 	}
