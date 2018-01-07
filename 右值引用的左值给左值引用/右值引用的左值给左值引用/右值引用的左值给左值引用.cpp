@@ -164,6 +164,13 @@ int main()
 		callme(inRightRef_outLeftRef(DefClass())); // 返回的左值引用，没有区分左值还是右值，调用 左值引用参数 函数
 	}cout << "-----***-----" << endl;			   // 返回的右值引用，是将亡值，右值引用的右值 
 
+	{
+		cout << "-----*** std::move 给到右值引用变量 -----" << endl;
+		DefClass c;
+		DefClass&& lvalue_of_right_ref = std::move(c);
+		callme(lvalue_of_right_ref);// 这个调用的是左值引用的版本  右值引用给到一个右值引用变量就是左值
+		callme(std::move(c));
+	}cout << "-----***-----" << endl;
 
 	{
 		cout << "-----****------" << endl;
