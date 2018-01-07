@@ -65,6 +65,11 @@ DefClass inLeftRef_outValue (DefClass & left) {
 	return left;				//	拷贝构造函数  @VS2015/Clang++  临时对象 右值
 }
 
+DefClass returnTempValue() {
+	DefClass c;
+	return c;
+}
+
 //////////////////////////////////////////////////////////////
 
 void callme(DefClass&& right) {
@@ -179,12 +184,20 @@ int main()
 		cout << def.temp[0] << endl;
 	}cout << "-----****-----" << endl;
 
+
+	{cout << "-----返回临时值给到右值引用-----" << endl;
+		DefClass&& rref = returnTempValue();
+		rref.dump();
+	}cout << "-----****-----" << endl;
+
+
 	{
 		DefClass c;
 		DefClass& c1 = c;
 		//DefClass&& c2 = c1;
 		DefClass&& c2 = std::move(c1); // std::move是函数 返回 右值引用的右值(将亡值) (右值引用可绑定)
 	}
+
 
 	/*
 	
