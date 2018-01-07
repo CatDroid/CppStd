@@ -1,4 +1,4 @@
-// ¿‡ Ù–‘∂‘œÛ«ø÷∆”“÷µ“˝”√.cpp : ∂®“Âøÿ÷∆Ã®”¶”√≥Ã–Úµƒ»Îø⁄µ„°£
+Ôªø// Á±ªÂ±ûÊÄßÂØπË±°Âº∫Âà∂Âè≥ÂÄºÂºïÁî®.cpp : ÂÆö‰πâÊéßÂà∂Âè∞Â∫îÁî®Á®ãÂ∫èÁöÑÂÖ•Âè£ÁÇπ„ÄÇ
 //
 
 #include "stdafx.h"
@@ -16,19 +16,18 @@ class HugeMem {
 
 public:
 	HugeMem(int size) :mSize(size>0?size:1), mData(new int[mSize]) {
-		TLINE(__func__) ;
+		TLINE("HugeMem(int size)                 ") ;
 	}
 	HugeMem(const HugeMem& other):mSize(other.mSize), mData(new int[other.mSize]),mOther((void*)&other),mIsCopy(true){
-		TLINE(__func__);
+		TLINE("HugeMem(const HugeMem& other      ");
 		// Maybe it should be copy other.c to this.mData;
 	}
 	HugeMem(HugeMem&& other):mSize(other.mSize), mData(other.mData),mOther((void*)&other),mIsMove(true) {
-		TLINE(__func__);
+		TLINE("HugeMem(HugeMem&& other)           ");
 		other.mData = nullptr;
 	}
 	
 	HugeMem& operator=( HugeMem&& other ){ 
-		TLINE(__func__);
 		if (mData != nullptr) delete[] mData;
 		mData = other.mData;
 		mSize = other.mSize;
@@ -36,11 +35,12 @@ public:
 		mIsCopy = false;
 		mIsMove = true;
 		other.mData = nullptr;
+		TLINE("HugeMem& operator=( HugeMem&& other )");
 		return *this;
 	}
 	
 	~HugeMem() {
-		TLINE(__func__);
+		TLINE("~HugeMem()                          ");
 		if(mData !=nullptr ) delete[] mData;
 	}
 	void dump() {
@@ -48,7 +48,7 @@ public:
 	}
 protected:
 	int mSize{ 0 };
-	int * mData { nullptr };	// æÕµÿ≥ı ºªØ
+	int * mData { nullptr };	// Â∞±Âú∞ÂàùÂßãÂåñ
 
 	void* mOther{ nullptr };
 	bool mIsCopy{ false }; 
@@ -61,29 +61,29 @@ public:
 #define MLINE(func)  cout << func << "[" << this << "]" <<  endl;
 
 	Movable(int size) :i(new int(-1)), h(size) {
-		MLINE(__func__);
+		MLINE("Movable(int size)           ");
 	}
 
 	Movable(const Movable& other) :i(other.i), h(other.h) {
-		MLINE(__func__);
+		MLINE("Movable(const Movable& other)");
 	}
 
-	Movable(Movable&& other):i(other.i),h(std::move(other.h)) //** »Áπ˚¿‡ Ù–‘ «∂‘œÛ ”ˆµΩ±æ¿‡µƒ“∆∂Øππ‘ÏªÚ’ﬂ“∆∂ØøΩ±¥ “ª∂®“™”√std::move ‘µΩ¿‡ Ù–‘∂‘œÛ“≤”¶”√“∆∂Ø”Ô“Â
+	Movable(Movable&& other):i(other.i),h(std::move(other.h)) //** Â¶ÇÊûúÁ±ªÂ±ûÊÄßÊòØÂØπË±° ÈÅáÂà∞Êú¨Á±ªÁöÑÁßªÂä®ÊûÑÈÄ†ÊàñËÄÖÁßªÂä®Êã∑Ë¥ù ‰∏ÄÂÆöË¶ÅÁî®std::moveËØïÂà∞Á±ªÂ±ûÊÄßÂØπË±°‰πüÂ∫îÁî®ÁßªÂä®ËØ≠‰πâ
 	{
 		other.i = nullptr;
-		MLINE(__func__);
+		MLINE("Movable(Movable&& other)     ");
 	}
 
 	Movable& operator = ( Movable&& other) {
 		if (i != nullptr) { delete i; }
 		i = other.i; other.i = nullptr;
-		h = std::move(other.h); // ** ”“÷µ“˝”√±‰¡øµƒ µ¿˝ Ù–‘ “™”√std::move«ø÷∆◊™≥…”“÷µ
-		MLINE(__func__);
+		h = std::move(other.h); // ** Âè≥ÂÄºÂºïÁî®ÂèòÈáèÁöÑÂÆû‰æãÂ±ûÊÄß Ë¶ÅÁî®std::moveÂº∫Âà∂ËΩ¨ÊàêÂè≥ÂÄº
+		MLINE("Movable& operator = ( Movable&& other)");
 		return *this;
 	}
 	
 	~Movable(){
-		MLINE(__func__);
+		MLINE("~Movable()                   ");
 		if (i != nullptr) { delete i;  }
 	}
 
@@ -103,11 +103,33 @@ Movable GetTemp() {
 	return temp;
 }
 
+// Âà©Áî®ÁßªÂä®ËØ≠‰πâ È´òÊÄßËÉΩË∞ÉÁî®‰∏§‰∏™ÂÆû‰æãÁöÑÂÄº
+template <typename T>
+void swap(T& a, T&b) {
+	T tmp(std::move(a));
+	a = std::move(b);
+	b = std::move(tmp);
+}
 
 int main()
 {
-	Movable temp(GetTemp());
-	temp.dump();
+	{
+		Movable temp(GetTemp());
+		temp.dump();
+	}
+
+	{ cout << endl << endl << "È´òÊÄßËÉΩ‰∫§Êç¢‰∏§‰∏™ÂèòÈáè(Á±ª)ÁöÑÂÄº" << endl << endl ;
+		Movable a1(10);
+		Movable a2(20);
+		a1.dump();
+		a2.dump();
+		cout << "---" << endl;
+		::swap(a1, a2);
+		cout << "---" << endl;
+		a1.dump();
+		a2.dump();
+	}
+ 
 
 	/*
 
@@ -128,7 +150,7 @@ dump[0104FB68]:,data:03503718,other:0104FA54,copy?0,move?1
 	
 
 clang++
-clang++ ¿‡ Ù–‘∂‘œÛ«ø÷∆”“÷µ“˝”√.cpp -o main.exe --std=c++11
+clang++ Á±ªÂ±ûÊÄßÂØπË±°Âº∫Âà∂Âè≥ÂÄºÂºïÁî®.cpp -o main.exe --std=c++11
 
 HugeMem[0xffffcbe8]:,data:0x600000480,other:0,copy?0,move?0
 Movable[0xffffcbe0]
@@ -140,7 +162,7 @@ dump[0xffffcbe8]:,data:0x600000480,other:0,copy?0,move?0
 ~HugeMem[0xffffcbe8]:,data:0x600000480,other:0,copy?0,move?0
 
 
-clang++ ¿‡ Ù–‘∂‘œÛ«ø÷∆”“÷µ“˝”√.cpp -o main.exe --std=c++11 -fno-elide-constructors
+clang++ Á±ªÂ±ûÊÄßÂØπË±°Âº∫Âà∂Âè≥ÂÄºÂºïÁî®.cpp -o main.exe --std=c++11 -fno-elide-constructors
 
 HugeMem[0xffffcb10]:,data:0x600000480,other:0,copy?0,move?0
 Movable[0xffffcb08]
