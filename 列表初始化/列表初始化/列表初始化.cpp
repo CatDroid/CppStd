@@ -161,6 +161,10 @@ public:
 // 相同类型 变长参数
 void func(std::initializer_list<MyElem> list)
 {
+	if (list.begin() == list.end()) {
+		cout << "空列表" << endl;
+	}
+
 	for (auto it = list.begin(); it != list.end(); it++)
 	{// const MyElem* it 
 		cout << it->get() << endl; // 因为指针是const的 所以get必须 限定const 才能调用
@@ -380,56 +384,64 @@ int main()
 	{// std::initializer_list   a.用于自定义类型的列表初始化方法   b. 传递相同类型数据的集合
 		cout << "函数 传递 相同类型变长参数 std::initializer_list" << endl;
 		func({ MyElem(111) , MyElem(222), MyElem(333) });  
+
+		func({}); // 空列表 
 	}cout << "------------------------------ " << endl;
 
-	/*
-	std::initialzer_list
-	1. 轻量级的容器类型 , 内部定义了迭代器iterator等容器必须的一些概念
-	2. 可以接受任意长度的初始化列表, 元素必须是要相同的或者可以转换为T类型的
-	std::initialzer_list<T>   { {a1,b1,c1}, {a2,b2,c2}, {a3,b3,c3} <-调用T的构造函数   }
-	std::initialzer_list<T>   { a1 , a2 , a3 <- 也是调用T的构造函数    }
-	3. 	只有三个成员接口，begin(),end(),size()
-	4.  它只能被整体的初始化和赋值，遍历只能通过begin和end迭代器来，
+	{
+		/*
+		std::initialzer_list
+		1. 轻量级的容器类型 , 内部定义了迭代器iterator等容器必须的一些概念
+		2. 可以接受任意长度的初始化列表, 元素必须是要相同的或者可以转换为T类型的
+		std::initialzer_list<T>   { {a1,b1,c1}, {a2,b2,c2}, {a3,b3,c3} <-调用T的构造函数   }
+		std::initialzer_list<T>   { a1 , a2 , a3 <- 也是调用T的构造函数    }
+		3. 	只有三个成员接口，begin(),end(),size()
+		4.  它只能被整体的初始化和赋值，遍历只能通过begin和end迭代器来，
 		遍历取得的数据是可读的，是不能对单个进行修改的(const T*)
-	5.  initialzer_list<T>保存的是T类型的引用，并不对T类型的数据进行拷贝，因此需要注意变量的生存期
-	*/
+		5.  initialzer_list<T>保存的是T类型的引用，并不对T类型的数据进行拷贝，因此需要注意变量的生存期
+		*/
 
-	std::initializer_list<int> out_of_range =  initializer_out_of_range();
-	for (std::initializer_list<int>::iterator itor = out_of_range.begin();
+		std::initializer_list<int> out_of_range = initializer_out_of_range();
+		for (std::initializer_list<int>::iterator itor = out_of_range.begin();
 		itor < out_of_range.end(); itor++) {
-		cout << *itor << endl; // 非法未知的内容
+			cout << *itor << endl; // 非法未知的内容
+		}
 	}
 
 
-	/*
+
+	{
+		/*
 		列表初始化防止"类型收窄"
 
-		C++11的列表初始化 
-		
+		C++11的列表初始化
+
 		可以防止类型收窄(C++98/03中的隐式类型转换),将范围大的转换为范围小的表示
-		
+
 		在C++98/03中，类型收窄并不会编译出错
 		在C++11中，使用列表初始化的类型收窄编译将会报错
-	*/
+		*/
 
-	float f11 = 2;
-	float f11_init{ 2 }; // int -> float OK 
+		float f11 = 2;
+		float f11_init{ 2 }; // int -> float OK 
 
-	int i11 = 2.1;
-	//int i11_init{ 2.1 }; // ERROR  double转换到int 需要收缩转换
+		int i11 = 2.1;
+		//int i11_init{ 2.1 }; // ERROR  double转换到int 需要收缩转换
 
-	// 使用Clang++  会默认带上选项 [-Wc++11-narrowing]  可以通过 -Wno-narrowing 改成只是警告
-	// 所以下面的会错误:
-	// error: type 'double' cannot be narrowed to 'int' in  initializer list
-	int float2int[] = { 1.1,1.0,2.2,2.3,2.4 };
+		// 使用Clang++  会默认带上选项 [-Wc++11-narrowing]  可以通过 -Wno-narrowing 改成只是警告
+		// 所以下面的会错误:
+		// error: type 'double' cannot be narrowed to 'int' in  initializer list
+		int float2int[] = { 1.1,1.0,2.2,2.3,2.4 };
 
-	const int x = 1024, y = 127 ;
-	char c = x;  //OK   会被截断 
-	//char d{ x };//error   int --> char 类型变窄 需要收缩变换
-	char e = y; // OK  
-	char f{ y };// 超过127 就会编译错误  
+		const int x = 1024, y = 127;
+		char c = x;  //OK   会被截断 
+					 //char d{ x };//error   int --> char 类型变窄 需要收缩变换
+		char e = y; // OK  
+		char f{ y };// 超过127 就会编译错误  
 
-	cout << endl;
+		cout << endl;
+	}
+	
     return 0;
 }
 
