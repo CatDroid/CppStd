@@ -1,0 +1,8 @@
+vs2015 x86 本机工具命令提示符
+D:\Project\CppStd\boost_1_68_0>bootstrap.bat
+bjam stage --toolset=msvc-14.0 --without-graph --without-graph_parallel link=static runtime-link=shared runtime-link=static threading=multi release debug
+
+库目录在  boost_1_68_0\stage\lib
+
+VS2015要配置成(x86 debug)
+多线程调试 (/MTd)
