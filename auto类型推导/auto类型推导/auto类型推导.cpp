@@ -75,8 +75,20 @@ auto cbegin(const T& container) -> decltype(std::begin(container)) {
 }
 
 
+template<typename T>
+void f(const T&& param) { // param是一个右值引用  T&&被const剥夺了转向引用/万能应用
+	std::cout << param.size() << std::endl;
+}
+
 int main()
 {
+	{
+		std::vector<int> temp(10, 0);
+		f(std::move(temp)); // ok
+		//f(temp);			// error
+
+	}BLOCK
+
 	{
 		list<MyClass> list;
 		list.push_back(MyClass(1));
