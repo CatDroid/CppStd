@@ -32,6 +32,8 @@ public:
 	
 };
 
+void test2();
+
 // 指针到成员运算符		.* 和 ->*  第一操作数 必须是类的对象 第二操作数 必须是'指向成员的指针类型 '
 // 成员访问运算符		. 和 ->
 
@@ -64,6 +66,7 @@ int main()
 	(d.*pFun)(220);// 还是支持多态的!  执行override的Derive::call_func(int)
 	d.base_func();
 
+	test2();
 
     return 0;
 }
