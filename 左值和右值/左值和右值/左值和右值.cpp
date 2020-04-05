@@ -182,11 +182,77 @@ void Right(Base&& right) {
 	RightAndRight(static_cast<Base&&>(right));
 }
 
+
+
 // std::move(foo)					std::move 返回 对象foo 的右值引用(rvalue reference) ,实现就是一个static_cast 
 // std::vector<std::unique_ptr<T>>	在容器 std::vector 中放入了不可复制只能移动的类的实例(std::unique_ptr 的拷贝构造函数是被删除的)
 
+void process_value(int& i) {
+	std::cout << "LValue processed: " << i << std::endl;
+	i = 5;// 修改左值引用
+}
+
+void process_value(int&& i) {
+	std::cout << "RValue processed: " << i << std::endl;
+}
+
+void forward_value(int&& i) {
+	process_value(i); // 这里正常应该用std::move() 作为传递
+}
+
+decltype(auto) f2() {// C++14; 实际是 int& f2() 
+	int x = 0;
+	return (x); // 导致了返回局部变量的引用  与return x;不一样
+}
+
+//auto f3() -> decltype((x)) { // C++11 后置返回值类型 只能根据形参的变量类型 不能根据局部变量/还没有定义
+//	int x = 0;
+//	return x;
+//}
+
 int main()
 {
+	{
+		auto temp = f2();
+		temp = 12;
+	} LINE
+
+	{
+		int a = 111; 
+		int b = 111;
+		decltype(a + 2) temp = 111;	// a+2  (a+2)都是右值表达式 但不是右值引用 所以结果是T 
+		decltype((a + 2)) temp3 = 111;// temp3 temp是int
+		
+
+		//decltype((a)) temp2 = 3;	// temp是int& 
+									// 1. x 是左值表达式  (x)也是左值表达式
+									// 2. 同时,因为只有一个左值表达式不是一个类型为T的名字 就会得到一个T&的类型
+		decltype((a)) temp2 = b;    // 所以这里是定义一个左值引用变量 T& 定义的时候需要初始化,即引用一个左值 
+		temp2 = 222;
+		decltype(a) temp4 = b;		// 所以这里只是定义个左值变量 T 
+		temp4 = 333;
+
+		std::cout << "temp = "  << temp  << std::endl;
+		std::cout << "temp2 = " << temp2 << std::endl;
+		std::cout << "temp3 = " << temp3 << std::endl;
+		std::cout << "temp4 = " << temp4 << std::endl;
+		std::cout << "a = " << a << std::endl;
+		std::cout << "b = " << b << std::endl;
+	} LINE
+
+	{
+		int a = 0;
+		process_value(a);
+		process_value(1);
+		forward_value(2); 
+
+		int b = 222;
+		forward_value(std::move(b));
+		std::cout << "forward value = " << b << std::endl; // 这样就真的会把左值变量的值给修改了 这里打印5
+		// 如果临时对象通过一个接受右值的函数传递给另一个函数时，就会变成左值，
+		// 因为这个临时对象在传递过程中，变成了命名对象 
+	} LINE
+
 	{
 		Base tempA;
 		Base tempB(std::move(tempA)); // 如果没有constructor(Base&& other) 那么就用 constructor(const Base& other) 但是不能改other
