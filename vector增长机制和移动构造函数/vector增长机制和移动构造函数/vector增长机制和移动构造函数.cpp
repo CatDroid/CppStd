@@ -43,7 +43,7 @@ public:
 	}
 
 	VecBase& operator = (VecBase&& other) {			// 移动赋值函数
-		cout << "opertor = (  VecBase&& other) " << this << endl;
+		cout << "opertor = (  VecBase&& other) " << this << " other " << &other << endl;
 		counter = other.counter;
 		other.counter = -1;
 		return *this;
@@ -81,6 +81,41 @@ int main()
 		// 重新分配内存时候 如果类不支持 移动构造函数 就会调用拷贝构造函数
 	}
 
+
+	{
+		cout << "插值之后 会导致移动后续的元素" << endl; // 容量扩展 也会导致所有原来的元素调用移动构造函数的调用
+		vector<VecBase> list;
+		list.reserve(3);
+
+		list.push_back(VecBase(2011));
+		list.push_back(VecBase(2012));
+		
+		cout << "begin insert " << endl;
+		list.insert(list.begin() + 1, VecBase(2013));
+		cout << "done  insert " << endl;
+
+		/*
+		g++ vector增长机制和移动构造函数.cpp -std=c++11 -O3
+		g++ (GCC) 7.4.0
+
+		VecBase(int temp) = 2011 0xffffcbbc
+		VecBase(VecBase && other) 0x600000490 other 0xffffcbbc
+		~VecBase() 0xffffcbbc
+		VecBase(int temp) = 2012 0xffffcbbc
+		VecBase(VecBase && other) 0x600000494 other 0xffffcbbc
+		~VecBase() 0xffffcbbc
+		begin insert
+		VecBase(int temp) = 2013 0xffffcbbc  << 构造函数 (新元素)
+		VecBase(VecBase && other) 0x600000498 other 0x600000494  移动构造函数(之前第2个移到第3个)
+		opertor = (  VecBase&& other) 0x600000494 other 0xffffcbbc 移动赋值函数(新元素）替换到2的位置
+		~VecBase() 0xffffcbbc
+		done  insert
+		~VecBase() 0x600000490
+		~VecBase() 0x600000494
+		~VecBase() 0x600000498
+		
+		*/
+	}
     return 0;
 }
 
